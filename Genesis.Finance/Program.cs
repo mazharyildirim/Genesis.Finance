@@ -1,6 +1,11 @@
+using Serilog;
+using Serilog.Events;
+using Serilog.Sinks.MSSqlServer;
 using Genesis.Finance.Components;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
 
 // Add services to the container.
 builder.Services.AddRazorComponents()

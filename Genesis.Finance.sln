@@ -5,6 +5,10 @@ VisualStudioVersion = 17.9.34723.18
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Genesis.Finance", "Genesis.Finance\Genesis.Finance.csproj", "{6E512717-D694-408E-BE6E-D2E05C6C5177}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Genesis.Core.Models", "Genesis.Code.Models\Genesis.Core.Models.csproj", "{047C25EC-7182-4827-A593-058D4002A324}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Genesis.CoreApi", "Genesis.CoreApi\Genesis.CoreApi.csproj", "{9A4A61D6-AD08-45E0-A089-9122A45ABD4C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{6E512717-D694-408E-BE6E-D2E05C6C5177}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E512717-D694-408E-BE6E-D2E05C6C5177}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E512717-D694-408E-BE6E-D2E05C6C5177}.Release|Any CPU.Build.0 = Release|Any CPU
+		{047C25EC-7182-4827-A593-058D4002A324}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{047C25EC-7182-4827-A593-058D4002A324}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{047C25EC-7182-4827-A593-058D4002A324}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{047C25EC-7182-4827-A593-058D4002A324}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A4A61D6-AD08-45E0-A089-9122A45ABD4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A4A61D6-AD08-45E0-A089-9122A45ABD4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A4A61D6-AD08-45E0-A089-9122A45ABD4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A4A61D6-AD08-45E0-A089-9122A45ABD4C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
