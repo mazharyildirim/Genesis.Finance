@@ -25,7 +25,7 @@ namespace Genesis.CoreApi.Controllers
         }
      
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] Genesis.CoreApi.DataModels.Users user, CancellationToken cancellationToken)
+        public async Task<IActionResult> Login([FromBody] Genesis.Shared.Users.Login user, CancellationToken cancellationToken)
         {
             try
             {
@@ -64,7 +64,7 @@ namespace Genesis.CoreApi.Controllers
                     var tokenString = new JwtSecurityTokenHandler().WriteToken(tokeOptions);
                     var refreshToken = GenerateRefreshToken();
                     _authRepository.UpdateUserRefreshTokens(controlUser.UserName, controlUser.RefreshToken, refreshToken);
-                    return Ok(new Genesis.CoreApi.Models.Tokens {  
+                    return Ok(new Genesis.Shared.Users.Tokens {  
                         UserId = userId, 
                         Username = controlUser.UserName, 
                         Email = controlUser.Email, 
@@ -122,7 +122,7 @@ namespace Genesis.CoreApi.Controllers
                     var tokenString = new JwtSecurityTokenHandler().WriteToken(tokeOptions);
                     var refreshToken = GenerateRefreshToken();
                     _authRepository.UpdateUserRefreshTokens(refleshToken.Username, refleshToken.Refresh_Token, refreshToken);
-                    return Ok(new Genesis.CoreApi.Models.Tokens
+                    return Ok(new Genesis.Shared.Users.Tokens
                     {
                         UserId = controlUser.UserId,
                         Username = controlUser.UserName,

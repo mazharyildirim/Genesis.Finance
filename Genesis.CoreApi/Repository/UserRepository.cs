@@ -8,6 +8,7 @@ namespace Genesis.CoreApi.Repository
     public class UserRepository: IUserRepository
     {
         private CoreDBContext _context;
+
         public UserRepository(CoreDBContext context) 
         {
             _context = context;
@@ -114,6 +115,15 @@ namespace Genesis.CoreApi.Repository
                 result.IsSuccess = false;
                 result.Message = "not exists record.";
             }
+            return result;
+        }
+
+        public async Task<NProcessResult<Users>> GetUsername(string username)
+        {
+            NProcessResult<Genesis.Core.Models.Users> result = new NProcessResult<Genesis.Core.Models.Users>();
+            var user = await _context.Users.FirstOrDefaultAsync(r => r.UserName == username && r.IsActive == 1);
+            result.IsSuccess = true;
+            result.ResultData = user;
             return result;
         }
     }

@@ -1,0 +1,14 @@
+﻿@using Genesis.WebApp.Models
+@if (Messages!=null && Messages.Other != null)
+{
+    foreach(string err in Messages.Other)
+    {
+        <p class="red">@err</p>
+    }
+}
+
+
+@code {
+    [Parameter]
+    public ErrorsModel Messages { get; set; }= null;
+}
