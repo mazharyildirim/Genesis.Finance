@@ -1,8 +1,4 @@
-﻿using System;
-
-using Genesis.WebApp.Models;
-
-namespace Genesis.WebApp.Services
+﻿namespace Genesis.WebApp.Services
 {
     public class StateService
     {
@@ -11,40 +7,39 @@ namespace Genesis.WebApp.Services
         public StateService(IApiService api)
         {
             this.api = api;
-            User = new Genesis.Shared.Users.Tokens();
+            UserResponse = new Genesis.Shared.Users.UserLogin();
         }
 
         public event Action OnUserChange;
 
         private void NotifyUserChanged() => OnUserChange?.Invoke();
 
-        public ErrorsModel Errors { get; private set; }
-        public Genesis.Shared.Users.Tokens User { get; private set; }
+        
+        public Genesis.Shared.Users.UserLogin UserResponse { get; private set; }
 
-        public bool IsSignedIn => User?.Access_Token != null;
+        public bool IsSignedIn => UserResponse?.Access_Token != null;
 
-        public void UpdateUser(Genesis.Shared.Users.Tokens user)
+        public void UpdateUser(Genesis.Shared.Users.UserLogin userResponse)
         {
-            //var oldToken = user?.Access_Token;
-            var newToken = user?.Access_Token;
-            User = user;
-            api.SetToken(newToken);
-            NotifyUserChanged();
-            //if (oldToken != newToken)
-            //{
-            //    User = user;
 
-            //    if (newToken != null)
-            //    {
-            //        api.SetToken(newToken);
-            //    }
-            //    else
-            //    {
-            //        api.ClearToken();
-            //    }
+            var oldToken = UserResponse?.Access_Token;
+            var newToken = userResponse?.Access_Token;
 
-            //    NotifyUserChanged();
-            //}
+            if (oldToken != newToken)
+            {
+                UserResponse = userResponse;
+
+                if (newToken != null)
+                {
+                    api.SetToken(newToken);
+                }
+                else
+                {
+                    api.ClearToken();
+                }
+
+                NotifyUserChanged();
+            }
         }
     }
 }

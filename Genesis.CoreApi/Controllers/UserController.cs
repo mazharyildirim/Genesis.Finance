@@ -70,40 +70,6 @@ namespace Genesis.CoreApi.Controllers
             return Ok(data);
         }
 
-        [HttpGet("GetUserName")]
-        public IActionResult GetUserName([FromQuery] string username, CancellationToken cancellationToken)
-        {
-            var user = _repository.GetUsername(username);
-            if (user!= null)
-            {
-                int userId = user.Result.ResultData.UserId;
-                var userRoles = _userRolesRepository.GetRoles(userId); 
-                string[] roles = new string[userRoles.Count];
-                int i = 0;
-                foreach (var userRole in userRoles)
-                {
-                    roles[i] = userRole;
-                    i++;
-                }
-
-                return Ok(new Genesis.Shared.Users.Tokens
-                {
-                    UserId = userId,
-                    Username = user.Result.ResultData.UserName,
-                    Email = user.Result.ResultData.Email,
-                    DisplayName = user.Result.ResultData.GetName(),
-                    Access_Token = user.Result.ResultData.RefreshToken,
-                    Refresh_Token = user.Result.ResultData.RefreshToken,
-                    Roles = roles
-                });
-            }
-            else
-            {
-                return Unauthorized();
-            }
-            
-        }
-
 
         [HttpPost("AddUser")]
         public async Task<Response<NoContent>> AddUser([FromBody] UserDTO userDTO, CancellationToken cancellationToken)

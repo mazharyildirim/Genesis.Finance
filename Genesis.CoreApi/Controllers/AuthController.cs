@@ -1,4 +1,11 @@
-﻿using Genesis.CoreApi.Shared.Cryptography;
+﻿using Genesis.Core.Models;
+using Genesis.CoreApi.DataModels;
+using Genesis.CoreApi.DTO;
+using Genesis.CoreApi.Shared;
+using Genesis.CoreApi.Shared.Cryptography;
+using Genesis.Shared;
+using Genesis.Shared.Users;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -23,22 +30,23 @@ namespace Genesis.CoreApi.Controllers
             _userRolesRepository = userRolesRepository;
             _cryptographer = cryptographer;
         }
-     
+
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] Genesis.Shared.Users.Login user, CancellationToken cancellationToken)
         {
+
             try
             {
                 string ps = _cryptographer.Encrypt(user.Password);
                 var controlUser = _authRepository.Find(user.Username, ps);
-               
+
                 if (controlUser != null)
                 {
                     int userId = controlUser.UserId;
                     var userRoles = _userRolesRepository.GetRoles(userId);
 
                     var authClaims = new List<Claim>
-                    { 
+                    {
                         new Claim(JwtRegisteredClaimNames.Sub,controlUser.UserName),
                         new Claim(JwtRegisteredClaimNames.Name,controlUser.GetName()),
                         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
@@ -64,27 +72,40 @@ namespace Genesis.CoreApi.Controllers
                     var tokenString = new JwtSecurityTokenHandler().WriteToken(tokeOptions);
                     var refreshToken = GenerateRefreshToken();
                     _authRepository.UpdateUserRefreshTokens(controlUser.UserName, controlUser.RefreshToken, refreshToken);
-                    return Ok(new Genesis.Shared.Users.Tokens {  
-                        UserId = userId, 
-                        Username = controlUser.UserName, 
-                        Email = controlUser.Email, 
+                    UserLogin User = new()
+                    {
+                        UserId = userId,
+                        Username = controlUser.UserName,
+                        Email = controlUser.Email,
                         DisplayName = controlUser.GetName(),
-                        Access_Token = tokenString, 
+                        Access_Token = tokenString,
                         Refresh_Token = refreshToken,
-                        Roles =roles 
-                    });
+                        Roles = roles,
+                    };
+                    return Ok(User);
+                }
+                else
+                {
+                    return Problem(
+                       detail: "Sistemde böyle bir kullanıcı yoktur.",
+                       title:"Kayıt bulunamadı");
+
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                throw;
+                return Problem(
+                    detail: ex.StackTrace,
+                    title: ex.Message);
             }
-            return Unauthorized();
+
+           
         }
 
         [HttpPost("reflesh")]
         public async Task<IActionResult> Reflesh([FromBody] Genesis.CoreApi.DataModels.RefleshTokens refleshToken, CancellationToken cancellationToken)
         {
+            
             try
             {
                 var controlUser = _authRepository.FindByRefleshToken(refleshToken.Username, refleshToken.Refresh_Token);
@@ -122,8 +143,11 @@ namespace Genesis.CoreApi.Controllers
                     var tokenString = new JwtSecurityTokenHandler().WriteToken(tokeOptions);
                     var refreshToken = GenerateRefreshToken();
                     _authRepository.UpdateUserRefreshTokens(refleshToken.Username, refleshToken.Refresh_Token, refreshToken);
-                    return Ok(new Genesis.Shared.Users.Tokens
+
+
+                    UserLogin User = new()
                     {
+
                         UserId = controlUser.UserId,
                         Username = controlUser.UserName,
                         Email = controlUser.Email,
@@ -131,16 +155,26 @@ namespace Genesis.CoreApi.Controllers
                         Access_Token = tokenString,
                         Refresh_Token = refreshToken,
                         Roles = roles
-                    });
+                    };
+                    return Ok(User);
+
+                }
+                else
+                {
+                    return Problem(
+                        detail: "Sistemde böyle bir kullanıcı yoktur.",
+                        title: "Kayıt bulunamadı");
                 }
             
             }
-            catch
+            catch(Exception ex)
             {
-                throw;
+                return Problem(
+                   detail: ex.StackTrace,
+                   title: ex.Message);
             }
 
-            return Unauthorized();
+           
         }
 
         [HttpPost("logout")]

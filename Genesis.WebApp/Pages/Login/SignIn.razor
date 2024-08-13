@@ -1,5 +1,6 @@
 ﻿@page "/Login/SignIn"
 
+@using Genesis.Shared
 @using Genesis.Shared.Users
 @using Genesis.WebApp.Models
 @using Genesis.WebApp.Pages
@@ -33,19 +34,18 @@
 
 @code {
     Genesis.Shared.Users.Login login = new();
-    private ErrorsModel errorMessage = null;
+    private ErrorMessages errorMessage = null;
     async Task Submit()
     {
         var response = await userApi.AttemptAuth(login);
 
-        if (response != null && response.HasSuccessStatusCode)
+        if (response != null && response.HasSuccessStatusCode )
         {
             navigationManager.NavigateTo("/");
         }
         else
         {
-            errorMessage = response?.Errors ??  new ErrorsModel();
-          
+            errorMessage = response.Errors;
         }
     }
 }

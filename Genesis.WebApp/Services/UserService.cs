@@ -23,21 +23,19 @@ namespace Genesis.WebApp.Services
             if (!string.IsNullOrEmpty(token))
             {
                 api.SetToken(token);
-                var response = await api.GetAsync<Genesis.Shared.Users.Tokens>($"/User/GetUsername/{username}");
-                state.UpdateUser(response.Value);
+               
             }
-            else
-            {
-                await PurgeAuth();
-            }
+          
         }
 
-        private async void SetAuth(Genesis.Shared.Users.Tokens user)
+        private async void SetAuth(Genesis.Shared.Users.UserLogin user)
         {
             if (user != null)
             {
+                var userData = user;
+
                 state.UpdateUser(user);
-                await jwtService.SaveTokenAsync(user.Access_Token,user.Username);
+                await jwtService.SaveTokenAsync(userData.Access_Token, userData.Username);
             }
             else
             {
@@ -48,10 +46,10 @@ namespace Genesis.WebApp.Services
 
         private async Task PurgeAuth()
         {
-            Genesis.Shared.Users.Tokens newUser = new Genesis.Shared.Users.Tokens();
+            Genesis.Shared.Users.UserLogin newUser = new Genesis.Shared.Users.UserLogin();
             await jwtService.DestroyTokenAsync();
 
-            if (state?.User != newUser)
+            if (state?.UserResponse != newUser)
                 state.UpdateUser(newUser);
         }
 
@@ -60,10 +58,10 @@ namespace Genesis.WebApp.Services
             await PurgeAuth();
         }
 
-        public async Task<ApiResponse<Genesis.Shared.Users.Tokens>> AttemptAuth(Genesis.Shared.Users.Login credentials)
+        public async Task<ApiResponse<Genesis.Shared.Users.UserLogin>> AttemptAuth(Genesis.Shared.Users.Login credentials)
         {
-            var response = await api.PostAsync<Genesis.Shared.Users.Tokens>($"/Auth/login", credentials);
-
+            var response = await api.PostAsync<Genesis.Shared.Users.UserLogin>($"/Auth/login", credentials);
+           
             SetAuth(response?.Value);
             return response;
         }
@@ -84,7 +82,7 @@ namespace Genesis.WebApp.Services
 
     public class UserResponse
     {
-        public ErrorsModel Errors { get; set; }
+      
         public UserModel User { get; set; }
     }
 

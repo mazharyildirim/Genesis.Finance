@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Text.Json;
 
 using Genesis.WebApp.Models;
+using Genesis.Shared;
 
 namespace Genesis.WebApp.Services
 {
@@ -102,7 +103,7 @@ namespace Genesis.WebApp.Services
     public class ApiResponse<T>
     {
         public T Value { get; set; }
-        public ErrorsModel Errors { get; set; }
+        public ErrorMessages Errors { get; set; }
         public System.Net.HttpStatusCode StatusCode { get; set; }
         public bool HasSuccessStatusCode { get; set; }
 
@@ -115,7 +116,7 @@ namespace Genesis.WebApp.Services
         {
             StatusCode = response.StatusCode;
             HasSuccessStatusCode = response.IsSuccessStatusCode;
-            Errors = new ErrorsModel();
+            Errors = new ErrorMessages();
             Value = default(T);
             var data = await response.Content.ReadAsStringAsync();
 
@@ -137,20 +138,18 @@ namespace Genesis.WebApp.Services
             {
                 try
                 {
-                    ErrorResponse errors = JsonSerializer.Deserialize<ErrorResponse>(data, new JsonSerializerOptions
+                    ErrorMessages errors = JsonSerializer.Deserialize<ErrorMessages>(data, new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
                     });
-                    Errors = errors?.Errors;
+                    Errors = errors;
                 }
                 catch (Exception ex)
                 {
-                    Errors = new ErrorsModel
+                    Errors = new ErrorMessages
                     {
-                        Other = new string[]
-                        {
-                            data
-                        }
+                         title = ex.Message,
+                          detail = ex.StackTrace
                     };
                 }
             }
@@ -165,9 +164,6 @@ namespace Genesis.WebApp.Services
         }
     }
 
-    internal class ErrorResponse
-    {
-        public ErrorsModel Errors { get; set; }
-    }
+
 
 }

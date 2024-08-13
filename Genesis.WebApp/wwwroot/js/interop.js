@@ -10,9 +10,9 @@
         console.log(token ? "Authentication token read from storage." : "No authentication token found in storage.");
         return token;
     },
-    getUserName: function () {
+    getusername: function () {
         var username = window.localStorage.getItem('username');
-        console.log(token ? "Authentication token read from storage." : "No authentication username found in storage.");
+        console.log(username ? "Authentication token read from storage." : "No authentication username found in storage.");
         return username;
     },
     destroyToken: function () {

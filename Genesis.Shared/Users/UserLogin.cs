@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Genesis.Shared.Users
 {
-    public class Tokens
+    public class UserLogin
     {
         public int UserId { get; set; }
         public string Username { get; set; }
@@ -16,5 +16,7 @@ namespace Genesis.Shared.Users
         public string Refresh_Token { get; set; }
 
         public string[] Roles { get; set; }
+    
+        
     }
 }

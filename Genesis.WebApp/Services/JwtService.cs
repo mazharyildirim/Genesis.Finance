@@ -14,22 +14,22 @@ namespace Genesis.WebApp.Services
 
         public async Task<string> GetTokenAsync()
         {
-            return await jsRuntime.InvokeAsync<string>("GenesisFinance.getToken");
+            return await jsRuntime.InvokeAsync<string>("GenesisWeb.getToken");
         }
 
         public async Task<bool> SaveTokenAsync(string Token,string username)
         {
-            return await jsRuntime.InvokeAsync<bool>("GenesisFinance.saveToken", Token,username);
+            return await jsRuntime.InvokeAsync<bool>("GenesisWeb.saveToken", Token,username);
         }
 
         public async Task<bool> DestroyTokenAsync()
         {
-            return await jsRuntime.InvokeAsync<bool>("GenesisFinance.destroyToken");
+            return await jsRuntime.InvokeAsync<bool>("GenesisWeb.destroyToken");
         }
 
         public async Task<string> GetUserNameAsync()
         {
-            return await jsRuntime.InvokeAsync<string>("GenesisFinance.getUserName");
+            return await jsRuntime.InvokeAsync<string>("GenesisWeb.getusername");
         }
     }
 }

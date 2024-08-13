@@ -1,14 +1,12 @@
-﻿@using Genesis.WebApp.Models
-@if (Messages!=null && Messages.Other != null)
+﻿@using Genesis.Shared
+@using Genesis.WebApp.Models
+@if (Messages!=null && Messages.detail != null)
 {
-    foreach(string err in Messages.Other)
-    {
-        <p class="red">@err</p>
-    }
+    <p class="red">@Messages.detail</p>
 }
 
 
 @code {
     [Parameter]
-    public ErrorsModel Messages { get; set; }= null;
+    public ErrorMessages Messages { get; set; } = null;
 }

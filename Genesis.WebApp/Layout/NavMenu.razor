@@ -26,21 +26,28 @@
                 <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
             </NavLink>
         </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="/Login/SignIn">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Login
-            </NavLink>
-        </div>
+        @if (state.IsSignedIn)
+        {
+            <div class="nav-item px-3">
+                <a class="nav-link" href="/" @onclick="SignOut">
+                    Sign out
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="/Login/SignIn">
+                    <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Login
+                </NavLink>
+            </div>
+        }
+        
     </nav>
 </div>
 
 @code {
-    Genesis.Shared.Users.Tokens tokens = new();
+    Genesis.Shared.Users.UserLogin tokens = new();
 
     private bool collapseNavMenu = true;
 
@@ -51,27 +58,33 @@
         collapseNavMenu = !collapseNavMenu;
     }
 
-    // protected override void OnInitialized()
-    // {
-    //     tokens = state.User;
-    //     state.OnUserChange += Update;
-    //     base.OnInitialized();
-    // }
+    protected override void OnInitialized()
+    {
+        tokens = state.UserResponse;
+        state.OnUserChange += Update;
+        base.OnInitialized();
+    }
 
-    // protected override async Task OnAfterRenderAsync(bool firstRender)
-    // {
-    //     await userApi.PopulateAsync();
-    //     await base.OnAfterRenderAsync(firstRender);
-    // }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await userApi.PopulateAsync();
+        await base.OnAfterRenderAsync(firstRender);
+    }
 
     public void Dispose()
     {
-        // state.OnUserChange -= Update;
+         state.OnUserChange -= Update;
     }
 
-    // private void Update()
-    // {
-    //     tokens = state.User;
-    //     StateHasChanged();
-    // }
+    private void Update()
+    {
+        tokens = state.UserResponse;
+        StateHasChanged();
+    }
+
+    public async Task SignOut()
+    {
+        await userApi.SignOutAsync();
+        navigationManager.NavigateTo("/");
+    }
 }
