@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using Genesis.Core.Models;
-using Genesis.CoreApi.DTO;
 using Genesis.CoreApi.Repository;
 using Genesis.CoreApi.Shared;
+using Genesis.Shared.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

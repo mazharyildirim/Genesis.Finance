@@ -4,7 +4,7 @@ using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Reflection;
 
-namespace Genesis.CoreApi.Shared
+namespace Genesis.Shared
 {
     public class ApiResult<T>
     {

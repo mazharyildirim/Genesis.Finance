@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
-using AutoMapper.Features;
 using Genesis.Core.Models;
-using Genesis.CoreApi.DTO;
+using Genesis.Shared.DTO;
 
 namespace Genesis.CoreApi.Mapping
 {

@@ -1,4 +1,6 @@
 ﻿using System.Threading.Tasks;
+using Genesis.Shared;
+using Genesis.Shared.DTO;
 using Genesis.WebApp.Models;
 
 namespace Genesis.WebApp.Services
@@ -66,6 +68,17 @@ namespace Genesis.WebApp.Services
             return response;
         }
 
+        public async Task<ApiResponse<Genesis.Shared.Users.UserResponse>> GetUsers(string token)
+        {
+            api.SetToken(token);
+            var response = await api.GetAsync<Genesis.Shared.Users.UserResponse>($"/User/GetUsers/", new Dictionary<string, string>
+            {
+                { "pageIndex", "0" },
+                { "pageSize", "10" }
+            });
+            return response;
+        }
+        
         //public async Task<ApiResponse<UserResponse>> UpdateAsync(UserModel user)
         //{
         //    var response = await api.PutAsync<UserResponse>("/user", new

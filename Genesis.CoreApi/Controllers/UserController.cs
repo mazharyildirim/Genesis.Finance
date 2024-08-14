@@ -1,17 +1,18 @@
 ﻿using AutoMapper;
-using Genesis.Core.Models;
-using Genesis.CoreApi.DTO;
 using Genesis.CoreApi.Repository;
 using Genesis.CoreApi.Shared;
 using Genesis.CoreApi.Shared.Cryptography;
+using Genesis.Shared;
+using Genesis.Shared.DTO;
+using Genesis.Shared.Users;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
 namespace Genesis.CoreApi.Controllers
 {
     [Route("api/[controller]")]
-    //[Authorize]
+    [Authorize]
     public class UserController : Controller
     {
         private readonly IUserRepository _repository;
@@ -37,7 +38,7 @@ namespace Genesis.CoreApi.Controllers
 
       
         [HttpGet("GetUsers")]
-        public async Task<ActionResult<ApiResult<UserListModel>>> GetUsers(
+        public async Task<IActionResult> GetUsers(
               int pageIndex = 0,
               int pageSize = 10,
               string? sortColumn = null,
@@ -45,7 +46,8 @@ namespace Genesis.CoreApi.Controllers
               string? filterColumn = null,
               string? filterQuery = null)
         {
-            return await ApiResult<UserListModel>.CreateAsync(
+         
+           var data  = await ApiResult<UserListModel>.CreateAsync(
                     _context.Users.Where(r => r.IsDeleted == 0 && r.IsActive == 1).AsNoTracking()
                         .Select(c => new UserListModel()
                         {
@@ -60,6 +62,9 @@ namespace Genesis.CoreApi.Controllers
                     sortOrder,
                     filterColumn,
                     filterQuery);
+            Genesis.Shared.Users.UserResponse response = new UserResponse();
+            response.List = data.Data;
+            return Ok(response);
         }
 
         [HttpGet("GetUserId")]

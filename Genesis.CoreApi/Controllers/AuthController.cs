@@ -1,11 +1,5 @@
-﻿using Genesis.Core.Models;
-using Genesis.CoreApi.DataModels;
-using Genesis.CoreApi.DTO;
-using Genesis.CoreApi.Shared;
-using Genesis.CoreApi.Shared.Cryptography;
-using Genesis.Shared;
+﻿using Genesis.CoreApi.Shared.Cryptography;
 using Genesis.Shared.Users;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;

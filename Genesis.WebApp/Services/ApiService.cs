@@ -12,7 +12,7 @@ namespace Genesis.WebApp.Services
 {
     public class ApiService : IApiService
     {
-        const string BaseUrl = "http://localhost:5059/api";
+        const string BaseUrl = "https://localhost:7060/api";
 
         private HttpClient httpClient;
         private IConsoleLogService console;
@@ -25,13 +25,14 @@ namespace Genesis.WebApp.Services
 
         public void SetToken(string token)
         {
+
             if (!string.IsNullOrEmpty(token))
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Token", token);
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token);
         }
 
         public void ClearToken()
         {
-            httpClient.DefaultRequestHeaders.Authorization = null;
+            httpClient.DefaultRequestHeaders.Clear();
         }
 
         public async Task<ApiResponse<T>> GetAsync<T>(string Path, IDictionary<string, string> Params = null)

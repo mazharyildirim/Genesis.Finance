@@ -1,8 +1,4 @@
-﻿
-
-using Genesis.CoreApi.DTO;
-using Genesis.CoreApi.Shared;
-using Microsoft.AspNetCore.Mvc;
+﻿using Genesis.CoreApi.Shared;
 
 namespace Genesis.CoreApi.Repository
 {

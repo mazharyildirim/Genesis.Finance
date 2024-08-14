@@ -1,13 +1,7 @@
 ﻿
 using AutoMapper;
-using EFCore.BulkExtensions;
-using Genesis.Core.Models;
-using Genesis.CoreApi.DTO;
 using Genesis.CoreApi.Shared;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using System.Data;
-using System.Linq;
 namespace Genesis.CoreApi.Repository
 {
     public class RolesRepository:  IRolesRepository

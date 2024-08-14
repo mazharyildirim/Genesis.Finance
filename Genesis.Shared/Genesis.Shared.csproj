@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="EFCore.BulkExtensions" Version="7.1.5" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.3.4" />
+  </ItemGroup>
+
 </Project>

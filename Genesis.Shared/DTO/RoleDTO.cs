@@ -1,4 +1,4 @@
-﻿namespace Genesis.CoreApi.DTO
+﻿namespace Genesis.Shared.DTO
 {
     public class RoleDTO
     {

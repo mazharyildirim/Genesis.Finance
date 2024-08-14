@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Genesis.Core.Models", "Gene
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Genesis.CoreApi", "Genesis.CoreApi\Genesis.CoreApi.csproj", "{9A4A61D6-AD08-45E0-A089-9122A45ABD4C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Genesis.Shared", "Genesis.Shared\Genesis.Shared.csproj", "{B220E6A9-DF7A-4D0F-AB0A-285969DAFB29}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Genesis.Shared", "Genesis.Shared\Genesis.Shared.csproj", "{B220E6A9-DF7A-4D0F-AB0A-285969DAFB29}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Genesis.WebApp", "Genesis.WebApp\Genesis.WebApp.csproj", "{EDF82BEC-AA93-4CBF-8642-6C1C9B11551E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Genesis.WebApp", "Genesis.WebApp\Genesis.WebApp.csproj", "{EDF82BEC-AA93-4CBF-8642-6C1C9B11551E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

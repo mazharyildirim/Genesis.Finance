@@ -1,0 +1,50 @@
+﻿@page "/UserManagement/UserList"
+@using Genesis.Shared.DTO;
+@inject StateService stateService;
+@inject UserService userService;
+@inject NavigationManager navigationManager
+<h3>UserList</h3>
+
+@if (list!=null){
+
+    <table>
+        <tr>
+            <td>Ad</td>
+            <td>Soyad</td>
+            <td>Username</td>
+        </tr>
+       @foreach(var item in list)
+       {
+        <tr>
+            <td>@item.firstname</td>
+            <td>@item.lastname</td>
+            <td>@item.username</td>
+        </tr>
+       }
+    </table>
+}
+else
+{
+    <div>Yükleniyor...</div>
+}
+
+@code {
+    List<UserListModel> list = null;
+    protected override async Task OnInitializedAsync()
+    {
+        if (stateService.IsSignedIn)
+        {
+           
+            var userListResponse = await userService.GetUsers(stateService.UserResponse.Access_Token);
+            if (userListResponse.HasSuccessStatusCode)
+            {
+                list = userListResponse.Value.List;
+            }
+
+        }
+        else
+        {
+            navigationManager.NavigateTo("/Login/Login/SignIn");
+        }
+    }
+}
