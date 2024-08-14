@@ -1,0 +1,76 @@
+﻿ @typeparam TItem
+
+@code {
+    [Parameter]
+    public IEnumerable<TItem> Data { get; set; } = null;
+
+    [Parameter]
+    public IEnumerable<Genesis.Shared.ComponentModel.ListItem> ColumnList { get; set; }
+
+    [Parameter]
+    public int Count { get; set; } = 0;
+
+    [Parameter]
+    public int PageIndex { get; set; } = 0;
+
+    [Parameter]
+    public int PageSize { get; set; } = 0;
+    [Parameter]
+    public string SortColumn { get; set; } = string.Empty;
+    [Parameter]
+    public string SortOrder { get; set; } = string.Empty;
+    [Parameter]
+    public string FilterColumn { get; set; } = string.Empty;
+    [Parameter]
+    public string FilterQuery { get; set; } = string.Empty;
+
+    [Parameter]
+    public string PrimaryKey { get; set; } = string.Empty;
+} 
+
+@if (Data != null)
+{
+    @if (Data.Any())
+    {
+        <table>
+            @if (ColumnList.Any())
+            {
+               <tr>
+                @foreach (var item in ColumnList)
+                { 
+                    
+                        <td>@item.DisplayName</td>
+                             
+                }
+                </tr>
+                @foreach (var item in Data)
+                {
+                    <tr>
+                        @foreach (var subItem in ColumnList)
+                        {
+                            var propertyInfo = item.GetType().GetProperty(subItem.ColummName);
+                            if (propertyInfo != null)
+                            {
+                                <td>@propertyInfo.GetValue(item).ToString()</td>
+                            }
+                            else
+                            {
+                                <td></td>
+                            }
+
+                        }
+                    </tr>
+                }
+            }
+
+        </table>
+    }
+    else
+    {
+        <div>Kayıt bulunamadı.</div>
+    }
+}
+else
+{
+    <div>Kayıt yüklenmektedir.</div>
+}

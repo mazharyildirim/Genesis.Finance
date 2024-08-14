@@ -70,7 +70,6 @@ namespace Genesis.WebApp.Services
 
         public async Task<ApiResponse<Genesis.Shared.Users.UserResponse>> GetUsers(string token)
         {
-            api.SetToken(token);
             var response = await api.GetAsync<Genesis.Shared.Users.UserResponse>($"/User/GetUsers/", new Dictionary<string, string>
             {
                 { "pageIndex", "0" },
