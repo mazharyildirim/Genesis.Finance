@@ -6,9 +6,16 @@
 @inject NavigationManager navigationManager
 <h3>UserList</h3>
 
-@if (list!=null){
+@if (response!= null)
+{
 
-    <GenesisList Data="@list"  ColumnList="@columnList"></GenesisList>
+    <GenesisList Data="@response.List" ColumnList="@columnList" OnClickCallback="@Search"
+     TotalPages="@response.TotalPages" 
+     TotalCount="@response.TotalCount"
+     PageIndex="@response.PageIndex"
+                 PageSize="@pageSize"
+     HasNextPage ="@response.HasNextPage" HasPreviousPage ="@response.HasPreviousPage"
+                 PrimaryKey="userId"></GenesisList>
 }
 else
 {
@@ -16,17 +23,18 @@ else
 }
 
 @code {
-    List<UserListModel> list = null;
+    Genesis.Shared.Users.UserResponse response = null;
     List<Genesis.Shared.ComponentModel.ListItem> columnList = null;
+    private Int32 pageSize = 30;
     protected override async Task OnInitializedAsync()
     {
         if (stateService.IsSignedIn)
         {
 
-            var userListResponse = await userService.GetUsers(stateService.UserResponse.Access_Token);
+            var userListResponse = await userService.GetUsers("", "","","", pageSize,0);
             if (userListResponse.HasSuccessStatusCode)
             {
-                list = userListResponse.Value.List;
+                response = userListResponse.Value;
                 columnList = new List<Genesis.Shared.ComponentModel.ListItem>();
                 columnList.Add(new Genesis.Shared.ComponentModel.ListItem() { ColummName = "firstname",DisplayName ="Ad" });
                 columnList.Add(new Genesis.Shared.ComponentModel.ListItem() { ColummName = "lastname",DisplayName ="Soyad" });
@@ -38,5 +46,23 @@ else
         {
             navigationManager.NavigateTo("/Login/Login/SignIn");
         }
+    }
+
+
+
+    private async void Search(Genesis.Shared.ComponentModel.ListCriteriaModel _listCriteriaModel)
+    {
+        var userListResponse = await userService.GetUsers(_listCriteriaModel.FilterColumn, _listCriteriaModel.FilterQuery
+            , _listCriteriaModel.SortColumn,_listCriteriaModel.SortOrder,  _listCriteriaModel.PageSize,_listCriteriaModel.PageIndex);
+        if (userListResponse.HasSuccessStatusCode)
+        {
+            pageSize = userListResponse.Value.PageSize;
+            response = userListResponse.Value;
+            columnList = new List<Genesis.Shared.ComponentModel.ListItem>();
+            columnList.Add(new Genesis.Shared.ComponentModel.ListItem() { ColummName = "firstname", DisplayName = "Ad" });
+            columnList.Add(new Genesis.Shared.ComponentModel.ListItem() { ColummName = "lastname", DisplayName = "Soyad" });
+            columnList.Add(new Genesis.Shared.ComponentModel.ListItem() { ColummName = "username", DisplayName = "Kullanıcı Adı" });
+        }
+        StateHasChanged();
     }
 }

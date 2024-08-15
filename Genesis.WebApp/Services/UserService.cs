@@ -68,12 +68,16 @@ namespace Genesis.WebApp.Services
             return response;
         }
 
-        public async Task<ApiResponse<Genesis.Shared.Users.UserResponse>> GetUsers(string token)
+        public async Task<ApiResponse<Genesis.Shared.Users.UserResponse>> GetUsers(string filterColumn,string filterQuery,string sortColumn,string sortOrder, int pageSize,int pageIndex)
         {
             var response = await api.GetAsync<Genesis.Shared.Users.UserResponse>($"/User/GetUsers/", new Dictionary<string, string>
             {
-                { "pageIndex", "0" },
-                { "pageSize", "10" }
+                { "pageIndex", pageIndex.ToString() },
+                { "pageSize", pageSize.ToString() },
+                { "filterColumn", filterColumn },
+                {"filterQuery",filterQuery },
+                {"sortColumn",sortColumn },
+                {"sortOrder",sortOrder }
             });
             return response;
         }

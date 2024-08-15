@@ -2,67 +2,184 @@
 
 @code {
     [Parameter]
-    public IEnumerable<TItem> Data { get; set; } = null;
+    public IEnumerable<TItem> Data { get; set; }
 
     [Parameter]
     public IEnumerable<Genesis.Shared.ComponentModel.ListItem> ColumnList { get; set; }
 
     [Parameter]
-    public int Count { get; set; } = 0;
+    public int TotalCount { get; set; } = 0;
+
+    [Parameter]
+    public int TotalPages { get; set; } = 0;
 
     [Parameter]
     public int PageIndex { get; set; } = 0;
 
     [Parameter]
     public int PageSize { get; set; } = 0;
+
+    [Parameter]
+    public bool HasPreviousPage { get; set; }
+    [Parameter]
+    public bool HasNextPage { get; set; }
     [Parameter]
     public string SortColumn { get; set; } = string.Empty;
     [Parameter]
     public string SortOrder { get; set; } = string.Empty;
-    [Parameter]
-    public string FilterColumn { get; set; } = string.Empty;
-    [Parameter]
-    public string FilterQuery { get; set; } = string.Empty;
 
     [Parameter]
     public string PrimaryKey { get; set; } = string.Empty;
-} 
 
+    private Genesis.Shared.ComponentModel.ListCriteriaModel listCriteria = new();
+    [Parameter]
+    public EventCallback<Genesis.Shared.ComponentModel.ListCriteriaModel> OnClickCallback { get; set; }
+
+    private List<Int32> lstPageSize = new();
+
+    private async Task SendData()
+    {
+        listCriteria.PageIndex = 0;
+        if (ColumnList.Any() && string.IsNullOrEmpty(listCriteria.FilterColumn))
+        {
+            listCriteria.FilterColumn = ColumnList.First().ColummName;
+
+        }
+        listCriteria.SortColumn = this.SortColumn;
+        listCriteria.SortOrder = this.SortOrder;
+        await OnClickCallback.InvokeAsync(listCriteria);
+    }
+
+    private async void SetColumn(string columnName)
+    {
+        this.SortColumn = columnName;
+        if (this.SortOrder == "desc")
+        {
+            this.SortOrder = "asc";
+        }
+        else
+        {
+            this.SortOrder = "desc";
+        }
+        await SendData();
+    }
+    private async void SetPageIndex(int pageIndex)
+    {
+        listCriteria.PageIndex = pageIndex;
+        listCriteria.SortColumn = this.SortColumn;
+        listCriteria.SortOrder = this.SortOrder;
+        await OnClickCallback.InvokeAsync(listCriteria);
+    } 
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (ColumnList.Any() && string.IsNullOrEmpty(listCriteria.FilterColumn))
+        {
+            listCriteria.FilterColumn = ColumnList.First().ColummName;
+        }
+
+        lstPageSize.Add(1);
+        lstPageSize.Add(10);
+        lstPageSize.Add(20);
+        lstPageSize.Add(30);
+        lstPageSize.Add(50);
+        lstPageSize.Add(100);
+        listCriteria.PageSize = lstPageSize.First();
+    }
+}
 @if (Data != null)
 {
+    <table class="table">
+        <tr scope="row">
+            <td><input class="form-control" type="text" placeholder="Aranacak Kelime" @bind="listCriteria.FilterQuery" /></td>
+            <td>
+                <select class="form-control" @bind="listCriteria.FilterColumn">
+                  
+                    @if (ColumnList.Any())
+                    {
+                        @foreach (var item in ColumnList)
+                        {
+                            <option value="@item.ColummName">@item.DisplayName</option>
+                        }
+                    }
+                </select>
+            </td>
+            <td>
+                <button class="btn" @onclick="SendData">Ara</button>
+            </td>
+            <td>Sayfalama</td>
+            <td>
+                <select class="form-control" @bind="listCriteria.PageSize">
+                    @for (int i = 0; i < lstPageSize.Count; i++)
+                    {
+                        <option value="@lstPageSize[i]">@lstPageSize[i]</option>
+                    }
+                </select>
+            </td>
+        </tr>
+    </table>
     @if (Data.Any())
     {
-        <table>
+    
+        <table class="table">
             @if (ColumnList.Any())
             {
-               <tr>
-                @foreach (var item in ColumnList)
-                { 
-                    
-                        <td>@item.DisplayName</td>
-                             
-                }
-                </tr>
-                @foreach (var item in Data)
-                {
-                    <tr>
-                        @foreach (var subItem in ColumnList)
-                        {
-                            var propertyInfo = item.GetType().GetProperty(subItem.ColummName);
-                            if (propertyInfo != null)
-                            {
-                                <td>@propertyInfo.GetValue(item).ToString()</td>
-                            }
-                            else
-                            {
-                                <td></td>
-                            }
+                <thead>
+                    <tr class="thead-dark">
+                    @foreach (var item in ColumnList)
+                    {
 
-                        }
+                        <th scope="col">
+                            <a  onclick="@(()=> SetColumn(item.ColummName))">@item.DisplayName</a>
+                        </th>
+                    }
                     </tr>
-                }
-            }
+                </thead>
+                <tbody>
+                    @foreach (var item in Data)
+                    {
+                        <tr scope="row">
+                            @foreach (var subItem in ColumnList)
+                            {
+                                var propertyInfo = item.GetType().GetProperty(subItem.ColummName);
+                                if (propertyInfo != null)
+                                {
+                                    <td>@propertyInfo.GetValue(item).ToString()</td>
+                                }
+                                else
+                                {
+                                    <td></td>
+                                }
 
+                            }
+                        </tr>
+                    }
+                </tbody>
+            }
+         
+         <tr scope="row">
+             <td>Toplam Kayıt Sayısı:@TotalCount</td>
+                <td> &nbsp; </td>
+                <td> Sayfa:@(this.PageIndex + 1)</td>
+              <td>
+                    @if (HasPreviousPage){
+                    <a onclick="@(async () => SetPageIndex(0))">Başlangıç</a>
+                    }
+                    @if (this.PageIndex < this.TotalPages && (this.PageIndex !=0))
+                    {
+                        <a onclick="@(async () => SetPageIndex(this.PageIndex-1))">Bir önceki</a>
+                    }
+                    @if (this.PageIndex != this.TotalPages-1 )
+                    {
+                        <a onclick="@(async () => SetPageIndex(this.PageIndex+1))">Bir sonraki</a>
+                    }
+                    @if (HasNextPage){
+                        
+                    <a onclick="@(async () => SetPageIndex(this.TotalPages-1))">Bitiş</a>
+                    }
+                   
+              </td>
+         </tr>
         </table>
     }
     else

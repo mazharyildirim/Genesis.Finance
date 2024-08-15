@@ -64,6 +64,10 @@ namespace Genesis.CoreApi.Controllers
                     filterQuery);
             Genesis.Shared.Users.UserResponse response = new UserResponse();
             response.List = data.Data;
+            response.PageIndex = data.PageIndex;
+            response.PageSize = data.PageSize;
+            response.TotalCount = data.TotalCount;
+            response.TotalPages = data.TotalPages;
             return Ok(response);
         }
 

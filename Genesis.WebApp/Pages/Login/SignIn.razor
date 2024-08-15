@@ -1,4 +1,5 @@
-﻿@page "/Login/SignIn"
+﻿@layout Genesis.WebApp.Layout.LoginLayout
+@page "/Login/SignIn"
 
 @using Genesis.Shared
 @using Genesis.Shared.Users
@@ -7,36 +8,48 @@
 @inject NavigationManager navigationManager
 @inject Genesis.WebApp.Services.UserService userApi
 @inject IJSRuntime jsRuntime
-<div class="auth-page">
-    <div class="container page">
-        <div class="row">
-            <div class="col-md-6 offset-md-3 col-xs-12">
-                <h1 class="text-xs-center">Sign in</h1>
-                <p class="text-xs-center">
-                    <a href="/signup">Need an account?</a>
-                </p>
-                <ErrorMessage Messages="@errorMessage"></ErrorMessage>
-                <form>
-                    <fieldset class="form-group">
-                        <input class="form-control form-control-lg" type="text" placeholder="Username" @bind="login.Username" />
-                    </fieldset>
-                    <fieldset class="form-group">
-                        <input class="form-control form-control-lg" type="password" placeholder="Password" @bind="login.Password" />
-                    </fieldset>
-                    <button class="btn btn-lg btn-primary pull-xs-right" type="button" @onclick="Submit">
-                        Sign in
+<body id="LoginForm">
+    <div class="container">
+        <h1 class="form-heading">Giriş</h1>
+        <div class="login-form">
+            <div class="main-div">
+                <div class="panel">
+                    <h2>Giriş</h2>
+                 </div>
+                <p> <ErrorMessage Messages="@errorMessage" ></ErrorMessage></p>
+                <form id="Login">
+                    <div class="form-group">
+                        <input class="form-control" type="text" placeholder="Kullanıcı Adı" @bind="login.Username" />
+                    </div>
+                    <div class="form-group">
+                        <input class="form-control form-control-lg" type="password" placeholder="Şifre" @bind="login.Password"  />
+                    </div>
+                    <button class="btn btn-primary" type="button" @onclick="Submit">
+                        Giriş
                     </button>
                 </form>
             </div>
+         
         </div>
     </div>
-</div>
-
+</body>
 @code {
     Genesis.Shared.Users.Login login = new();
-    private ErrorMessages errorMessage = null;
+    private ErrorMessages errorMessage = new ErrorMessages();
     async Task Submit()
     {
+        if (string.IsNullOrEmpty(login.Username))
+        {
+            errorMessage.detail = "Kullanıcı adı giriniz.";
+            return;
+        }
+
+        if (string.IsNullOrEmpty(login.Password))
+        {
+            errorMessage.detail = "Şifre giriniz.";
+            return;
+        }
+
         var response = await userApi.AttemptAuth(login);
 
         if (response != null && response.HasSuccessStatusCode )
@@ -48,4 +61,5 @@
             errorMessage = response.Errors;
         }
     }
+  
 }
