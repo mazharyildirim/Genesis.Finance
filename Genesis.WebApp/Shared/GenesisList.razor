@@ -1,5 +1,5 @@
 ﻿ @typeparam TItem
-
+ @inject NavigationManager navigationManager
 @code {
     [Parameter]
     public IEnumerable<TItem> Data { get; set; }
@@ -30,6 +30,9 @@
 
     [Parameter]
     public string PrimaryKey { get; set; } = string.Empty;
+
+    [Parameter]
+    public string NewRecordUrl { get; set; } = string.Empty;
 
     private Genesis.Shared.ComponentModel.ListCriteriaModel listCriteria = new();
     [Parameter]
@@ -71,6 +74,14 @@
         await OnClickCallback.InvokeAsync(listCriteria);
     } 
 
+    private void SendNewRecord()
+    {
+        if (!string.IsNullOrEmpty(this.NewRecordUrl))
+        {
+            navigationManager.NavigateTo(this.NewRecordUrl);
+        }
+    }
+
     protected override async Task OnInitializedAsync()
     {
         if (ColumnList.Any() && string.IsNullOrEmpty(listCriteria.FilterColumn))
@@ -78,7 +89,6 @@
             listCriteria.FilterColumn = ColumnList.First().ColummName;
         }
 
-        lstPageSize.Add(1);
         lstPageSize.Add(10);
         lstPageSize.Add(20);
         lstPageSize.Add(30);
@@ -87,9 +97,14 @@
         listCriteria.PageSize = lstPageSize.First();
     }
 }
+<div >
 @if (Data != null)
 {
+ 
     <table class="table">
+        <tr scope="row">
+                <td><button type="button" class="form-control" onclick="@(()=> SendNewRecord())" style="width:200px;">Yeni Kayıt</button></td>
+        </tr>
         <tr scope="row">
             <td><input class="form-control" type="text" placeholder="Aranacak Kelime" @bind="listCriteria.FilterQuery" /></td>
             <td>
@@ -105,7 +120,7 @@
                 </select>
             </td>
             <td>
-                <button class="btn" @onclick="SendData">Ara</button>
+                    <button @onclick="SendData" class="form-control">Ara</button>
             </td>
             <td>Sayfalama</td>
             <td>
@@ -163,19 +178,19 @@
                 <td> Sayfa:@(this.PageIndex + 1)</td>
               <td>
                     @if (HasPreviousPage){
-                    <a onclick="@(async () => SetPageIndex(0))">Başlangıç</a>
+                            <a onclick="@(async () => SetPageIndex(0))" class="form-control">Başlangıç</a>
                     }
                     @if (this.PageIndex < this.TotalPages && (this.PageIndex !=0))
                     {
-                        <a onclick="@(async () => SetPageIndex(this.PageIndex-1))">Bir önceki</a>
+                            <a onclick="@(async () => SetPageIndex(this.PageIndex-1))" class="form-control">Bir önceki</a>
                     }
                     @if (this.PageIndex != this.TotalPages-1 )
                     {
-                        <a onclick="@(async () => SetPageIndex(this.PageIndex+1))">Bir sonraki</a>
+                            <a onclick="@(async () => SetPageIndex(this.PageIndex+1))" class="form-control">Bir sonraki</a>
                     }
                     @if (HasNextPage){
-                        
-                    <a onclick="@(async () => SetPageIndex(this.TotalPages-1))">Bitiş</a>
+
+                            <a onclick="@(async () => SetPageIndex(this.TotalPages-1))" class="form-control">Bitiş</a>
                     }
                    
               </td>
@@ -191,3 +206,4 @@ else
 {
     <div>Kayıt yüklenmektedir.</div>
 }
+</div>

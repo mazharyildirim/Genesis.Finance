@@ -1,26 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
-using System.Text.Json;
-
+﻿using Genesis.Shared;
 using Genesis.WebApp.Models;
-using Genesis.Shared;
+using System.Net.Http.Headers;
+using System.Text.Json;
 
 namespace Genesis.WebApp.Services
 {
     public class ApiService : IApiService
     {
-        const string BaseUrl = "https://localhost:7060/api";
+        private string BaseUrl = "";
 
         private HttpClient httpClient;
         private IConsoleLogService console;
 
-        public ApiService(HttpClient _httpClient, IConsoleLogService _console)
+        public ApiService(HttpClient _httpClient, IConsoleLogService _console, IConfiguration configuration)
         {
             httpClient = _httpClient;
             console = _console;
+            BaseUrl = configuration.GetSection("settings").Get<Settings>().ApiUrl;
         }
 
         public void SetToken(string token)

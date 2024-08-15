@@ -1,0 +1,8 @@
+﻿@page "/UserManagement/UserEdit"
+@page "/UserManagement/UserEdit/{UserId}"
+<h3>Kullanıcı Bilgileri</h3>
+
+@code {
+    [Parameter]
+    public int UserId { get; set; }
+}

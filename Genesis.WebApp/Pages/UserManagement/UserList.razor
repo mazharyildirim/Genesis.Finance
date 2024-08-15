@@ -4,18 +4,17 @@
 @inject StateService stateService;
 @inject UserService userService;
 @inject NavigationManager navigationManager
-<h3>UserList</h3>
+<h3>Kullanıcı Bilgileri</h3>
 
 @if (response!= null)
 {
 
     <GenesisList Data="@response.List" ColumnList="@columnList" OnClickCallback="@Search"
-     TotalPages="@response.TotalPages" 
+                 TotalPages="@response.TotalPages" NewRecordUrl="/UserManagement/UserEdit"
      TotalCount="@response.TotalCount"
      PageIndex="@response.PageIndex"
-                 PageSize="@pageSize"
-     HasNextPage ="@response.HasNextPage" HasPreviousPage ="@response.HasPreviousPage"
-                 PrimaryKey="userId"></GenesisList>
+     PageSize="@pageSize"
+     HasNextPage ="@response.HasNextPage" HasPreviousPage ="@response.HasPreviousPage" PrimaryKey="userId"></GenesisList>
 }
 else
 {
