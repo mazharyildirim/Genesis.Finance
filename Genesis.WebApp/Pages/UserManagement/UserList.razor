@@ -29,17 +29,13 @@ else
     {
         if (stateService.IsSignedIn)
         {
-
             var userListResponse = await userService.GetUsers("", "","","", pageSize,0);
             if (userListResponse.HasSuccessStatusCode)
             {
                 response = userListResponse.Value;
-                columnList = new List<Genesis.Shared.ComponentModel.ListItem>();
-                columnList.Add(new Genesis.Shared.ComponentModel.ListItem() { ColummName = "firstname",DisplayName ="Ad" });
-                columnList.Add(new Genesis.Shared.ComponentModel.ListItem() { ColummName = "lastname",DisplayName ="Soyad" });
-                columnList.Add(new Genesis.Shared.ComponentModel.ListItem() { ColummName = "username",DisplayName ="Kullanıcı Adı" });
+                SetColumn();
             }
-
+            StateHasChanged();
         }
         else
         {
@@ -57,11 +53,18 @@ else
         {
             pageSize = userListResponse.Value.PageSize;
             response = userListResponse.Value;
-            columnList = new List<Genesis.Shared.ComponentModel.ListItem>();
-            columnList.Add(new Genesis.Shared.ComponentModel.ListItem() { ColummName = "firstname", DisplayName = "Ad" });
-            columnList.Add(new Genesis.Shared.ComponentModel.ListItem() { ColummName = "lastname", DisplayName = "Soyad" });
-            columnList.Add(new Genesis.Shared.ComponentModel.ListItem() { ColummName = "username", DisplayName = "Kullanıcı Adı" });
+            SetColumn();
         }
         StateHasChanged();
+    }
+
+    private void SetColumn()
+    {
+        columnList = new List<Genesis.Shared.ComponentModel.ListItem>();
+        columnList.Add(new Genesis.Shared.ComponentModel.ListItem() { ColummName = "firstname", DisplayName = "Ad" });
+        columnList.Add(new Genesis.Shared.ComponentModel.ListItem() { ColummName = "lastname", DisplayName = "Soyad" });
+        columnList.Add(new Genesis.Shared.ComponentModel.ListItem() { ColummName = "username", DisplayName = "Kullanıcı Adı" });
+        columnList.Add(new Genesis.Shared.ComponentModel.ListItem() { ColummName = "email", DisplayName = "E.Posta" });
+        
     }
 }

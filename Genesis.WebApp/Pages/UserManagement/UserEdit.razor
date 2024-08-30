@@ -1,8 +1,139 @@
 ﻿@page "/UserManagement/UserEdit"
 @page "/UserManagement/UserEdit/{UserId}"
-<h3>Kullanıcı Bilgileri</h3>
+
+@using Genesis.Shared.Models.UserManagement;
+@using Genesis.Shared
+@inject UserService userService;
+@inject NavigationManager navigationManager
+@inject StateService stateService;
+
+<p> <GenesisErrorMessage Messages="@errorMessage"></GenesisErrorMessage></p>
+        <EditForm Model="@userDTO">
+            <h3>Kullanıcı bilgileri</h3>
+            <hr />
+            <div class="row">
+                <div class="mb-3 col">
+                    <label class="form-label">Ad</label>
+            <InputText id="firstName" class="form-control" placeholder="Ad"
+                       @bind-Value="userDTO.firstname" />
+                   
+                </div>
+                <div class="mb-3 col">
+                    <label class="form-label">Soyad</label>
+            <InputText id="lastname" class="form-control" placeholder="Soyad"
+                       @bind-Value="userDTO.lastname" />
+                    
+                </div>
+            </div>
+    <div class="row">
+        <div class="mb-3 col">
+            <label class="form-label">Kullanıcı Adı</label>
+            <InputText id="username" class="form-control" placeholder="Kullanıcı adı"
+                       @bind-Value="userDTO.username" type="email" />
+           
+        </div>
+        <div class="mb-3 col">
+            <label class="form-label">E-posta adresi</label>
+            <InputText id="email" class="form-control" placeholder="Elektronik posta"
+                       @bind-Value="userDTO.email" type="email" />
+           
+        </div>
+    </div>
+          
+                <div class="mb-3">
+            <button class="btn btn-lg btn-primary pull-xs-right" type="button" @onclick="Submit">
+                @ButtonName()
+            </button>
+        @if (!string.IsNullOrEmpty(this.UserId)){
+        <GenesisPopConfirm ConfirmedChanged="Delete" class="btn btn-lg btn-primary pull-xs-right" />
+        }
+            
+    </div>
+        </EditForm>
+   
+
 
 @code {
     [Parameter]
-    public int UserId { get; set; }
+    public string UserId { get; set; }
+    Genesis.Shared.DTO.UserDTO userDTO = new Genesis.Shared.DTO.UserDTO();
+    private ErrorMessages errorMessage = new ErrorMessages();
+    protected override async Task OnInitializedAsync()
+    {
+        stateService.OnUserChange += UserHasLoaded;
+        if (stateService.IsSignedIn)
+        {
+            if (!string.IsNullOrEmpty(this.UserId))
+            {
+                var userResponse = await userService.GetUser(System.Convert.ToInt32(this.UserId));
+                if (userResponse.HasSuccessStatusCode)
+                {
+                    userDTO = userResponse.Value;
+                }
+            }
+        }
+        else
+        {
+            navigationManager.NavigateTo("/Login/Login/SignIn");
+        }
+    }
+
+    public void Dispose()
+    {
+        stateService.OnUserChange -= UserHasLoaded;
+    }
+
+    void UserHasLoaded()
+    {
+        userDTO = new Genesis.Shared.DTO.UserDTO();
+        StateHasChanged();
+    }
+    async Task Submit()
+    {
+        userDTO.activeuserId = stateService.UserResponse.UserId;
+        var userResponse = !string.IsNullOrEmpty(this.UserId) ? await userService.UpdateAsync(userDTO) : await userService.AddAsync(userDTO);
+        if (userResponse != null && userResponse.HasSuccessStatusCode)
+        {
+            navigationManager.NavigateTo("/UserManagement/UserList");
+        }
+        else
+        {
+            errorMessage = userResponse?.Errors;
+        }
+    }
+    async Task Delete()
+    {
+        if (this.UserId == stateService.UserResponse.UserId.ToString())
+        {
+            errorMessage = new ErrorMessages()
+            {
+                 title = "Kayıt silme",
+                 detail = "Bu kullanıcıyı silemessiniz. Sistem girişinde kullanılıyor."
+            };
+            StateHasChanged();
+            return;
+        }
+        var userResponse = await userService.DeleteAsync(this.UserId);
+        if (userResponse != null && userResponse.HasSuccessStatusCode)
+        {
+            navigationManager.NavigateTo("/UserManagement/UserList");
+        }
+        else
+        {
+            errorMessage = userResponse?.Errors;
+        }
+        StateHasChanged();
+    }
+
+    private string ButtonName()
+    {
+        if (!string.IsNullOrEmpty(this.UserId))
+        {
+            return "Güncelle";
+        }
+        else
+        {
+            return "Ekle";
+        }
+    }
 }

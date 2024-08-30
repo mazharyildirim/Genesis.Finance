@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34723.18
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Genesis.Core.Models", "Genesis.Code.Models\Genesis.Core.Models.csproj", "{047C25EC-7182-4827-A593-058D4002A324}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Genesis.CoreApi", "Genesis.CoreApi\Genesis.CoreApi.csproj", "{9A4A61D6-AD08-45E0-A089-9122A45ABD4C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Genesis.Shared", "Genesis.Shared\Genesis.Shared.csproj", "{B220E6A9-DF7A-4D0F-AB0A-285969DAFB29}"
@@ -17,10 +15,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{047C25EC-7182-4827-A593-058D4002A324}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{047C25EC-7182-4827-A593-058D4002A324}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{047C25EC-7182-4827-A593-058D4002A324}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{047C25EC-7182-4827-A593-058D4002A324}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9A4A61D6-AD08-45E0-A089-9122A45ABD4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9A4A61D6-AD08-45E0-A089-9122A45ABD4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9A4A61D6-AD08-45E0-A089-9122A45ABD4C}.Release|Any CPU.ActiveCfg = Release|Any CPU

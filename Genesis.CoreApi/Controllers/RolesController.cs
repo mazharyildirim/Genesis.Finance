@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Genesis.Core.Models;
 using Genesis.CoreApi.Repository;
 using Genesis.CoreApi.Shared;
 using Genesis.Shared.DTO;
@@ -39,7 +38,7 @@ namespace Genesis.CoreApi.Controllers
         [HttpPost("AddRole")]
         public async Task<Response<RoleDTO>> AddRole([FromBody] RoleDTO  roleDTO, CancellationToken cancellationToken)
         {
-            var newRole = _mapper.Map<Roles>(roleDTO);
+            var newRole = _mapper.Map<Genesis.Shared.Models.UserManagement.Roles>(roleDTO);
             var role = await _repository.Create(newRole);
             
             return Response<RoleDTO>.Success(_mapper.Map<RoleDTO>(role.ResultData), 200);
@@ -48,7 +47,7 @@ namespace Genesis.CoreApi.Controllers
         [HttpPut("UpdateRole")]
         public async Task<Response<NoContent>> UpdateRole([FromBody] RoleDTO roleDTO, CancellationToken cancellationToken)
         {
-            var updateRole = _mapper.Map<Roles>(roleDTO);
+            var updateRole = _mapper.Map<Genesis.Shared.Models.UserManagement.Roles>(roleDTO);
             var result = await _repository.Update(updateRole);
             if (result.IsSuccess)
                 return Response<NoContent>.Success(204);

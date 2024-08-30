@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Genesis.Core.Models;
 using Genesis.CoreApi.Repository;
 using Genesis.CoreApi.Shared;
 using Genesis.Shared.DTO;
@@ -23,7 +22,7 @@ namespace Genesis.CoreApi.Controllers
         [HttpPost("AddUserRole")]
         public async Task<Response<NoContent>> AddUser([FromBody] UserRoleDTO userRoleDTO, CancellationToken cancellationToken)
         {
-            var userRole = _mapper.Map<UserRoles>(userRoleDTO);
+            var userRole = _mapper.Map<Genesis.Shared.Models.UserManagement.UserRoles>(userRoleDTO);
             var result = await _repository.AddUserRole(userRole.UserId, userRole.RoleId);
             if (result.IsSuccess)
                 return Response<NoContent>.Success(204);

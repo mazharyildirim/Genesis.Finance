@@ -2,9 +2,9 @@
 
 namespace Genesis.CoreApi.Repository
 {
-    public interface IUserRepository: IRepository<Genesis.Core.Models.Users>
+    public interface IUserRepository: IRepository<Genesis.Shared.Models.UserManagement.Users>
     {
-        Task<NProcessResult<bool>> ChangePassword(Genesis.Core.Models.Users entity);
-        Task<NProcessResult<Genesis.Core.Models.Users>> GetUsername(string username);
+        Task<NProcessResult<bool>> ChangePassword(Genesis.Shared.Models.UserManagement.Users entity);
+        Task<NProcessResult<Genesis.Shared.Models.UserManagement.Users>> GetUsername(string username);
     }
 }

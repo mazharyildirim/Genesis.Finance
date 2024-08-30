@@ -1,7 +1,4 @@
-﻿using System.Threading.Tasks;
-using Genesis.Shared;
-using Genesis.Shared.DTO;
-using Genesis.WebApp.Models;
+﻿using Genesis.WebApp.Models;
 
 namespace Genesis.WebApp.Services
 {
@@ -25,9 +22,7 @@ namespace Genesis.WebApp.Services
             if (!string.IsNullOrEmpty(token))
             {
                 api.SetToken(token);
-               
             }
-          
         }
 
         private async void SetAuth(Genesis.Shared.Users.UserLogin user)
@@ -63,8 +58,16 @@ namespace Genesis.WebApp.Services
         public async Task<ApiResponse<Genesis.Shared.Users.UserLogin>> AttemptAuth(Genesis.Shared.Users.Login credentials)
         {
             var response = await api.PostAsync<Genesis.Shared.Users.UserLogin>($"/Auth/login", credentials);
-           
             SetAuth(response?.Value);
+            return response;
+        }
+
+        public async Task<ApiResponse<Genesis.Shared.DTO.UserDTO>> GetUser(int userId)
+        {
+            var response = await api.GetAsync<Genesis.Shared.DTO.UserDTO>($"/User/GetUserId/", new Dictionary<string, string>
+            {
+                { "id", userId.ToString() }
+            });
             return response;
         }
 
@@ -81,19 +84,27 @@ namespace Genesis.WebApp.Services
             });
             return response;
         }
-        
-        //public async Task<ApiResponse<UserResponse>> UpdateAsync(UserModel user)
-        //{
-        //    var response = await api.PutAsync<UserResponse>("/user", new
-        //    {
-        //        user = user
-        //    });
 
-        //    if (response?.Value != null)
-        //        state.UpdateUser(response.Value.User);
+        public async Task<ApiResponse<UserResponse>> UpdateAsync(Genesis.Shared.DTO.UserDTO credentials)
+        {
+            var response = await api.PutAsync<UserResponse>("/User/UpdateUser", credentials);
+            return response;
+        }
 
-        //    return response;
-        //}
+        public async Task<ApiResponse<UserResponse>> AddAsync(Genesis.Shared.DTO.UserDTO credentials)
+        {
+            var response = await api.PostAsync<UserResponse>("/User/AddUser", credentials);
+            return response;
+        }
+
+        public async Task<ApiResponse<bool>> DeleteAsync(string userId)
+        {
+            var response = await api.DeleteAsync<bool>($"/User/DeleteUser/", new Dictionary<string, string>
+            {
+                { "id", userId.ToString() }
+            });
+            return response;
+        }
     }
 
     public class UserResponse

@@ -24,7 +24,7 @@ namespace Genesis.CoreApi.Repository
         public async Task<NProcessResult<bool>> AddUserRole(int userId,int roleId)
         {
             NProcessResult<bool> result = new NProcessResult<bool>();
-            _context.UserRoles.Add(new Core.Models.UserRoles()
+            _context.UserRoles.Add(new Genesis.Shared.Models.UserManagement.UserRoles()
             {
                  UserId =userId,
                  RoleId = roleId,

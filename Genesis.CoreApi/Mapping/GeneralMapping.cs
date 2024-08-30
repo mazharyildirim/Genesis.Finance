@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Genesis.Core.Models;
 using Genesis.Shared.DTO;
 
 namespace Genesis.CoreApi.Mapping
@@ -8,12 +7,12 @@ namespace Genesis.CoreApi.Mapping
     {
         public GeneralMapping()
         {
-            CreateMap<Roles, RoleDTO>().ReverseMap();
-            CreateMap<RoleDTO,Roles>().ReverseMap();
-            CreateMap<Users, UserDTO>().ReverseMap();
-            CreateMap<UserDTO, Users>().ReverseMap();
-            CreateMap<UserRoleDTO, UserRoles>().ReverseMap();
-            CreateMap< UserRoles, UserRoleDTO>().ReverseMap();
+            CreateMap<Genesis.Shared.Models.UserManagement.Roles, RoleDTO>().ReverseMap();
+            CreateMap<RoleDTO, Genesis.Shared.Models.UserManagement.Roles>().ReverseMap();
+            CreateMap<Genesis.Shared.Models.UserManagement.Users, UserDTO>().ReverseMap();
+            CreateMap<UserDTO, Genesis.Shared.Models.UserManagement.Users>().ReverseMap();
+            CreateMap<UserRoleDTO, Genesis.Shared.Models.UserManagement.UserRoles>().ReverseMap();
+            CreateMap<Genesis.Shared.Models.UserManagement.UserRoles, UserRoleDTO>().ReverseMap();
         }
     }
 }

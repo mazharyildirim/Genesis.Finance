@@ -14,23 +14,23 @@ namespace Genesis.CoreApi.Repository
             _mapper = mapper;
         }
 
-        public List<Genesis.Core.Models.Roles> GetAll()
+        public List<Genesis.Shared.Models.UserManagement.Roles> GetAll()
         {
-            return _context.Roles.Where(r => r.IsDeleted == 0 && r.IsActive == 1).ToList<Genesis.Core.Models.Roles>();
+            return _context.Roles.Where(r => r.IsDeleted == 0 && r.IsActive == 1).ToList<Genesis.Shared.Models.UserManagement.Roles>();
         }
 
-        public async Task<NProcessResult<Genesis.Core.Models.Roles>> GetId(int roleId)
+        public async Task<NProcessResult<Genesis.Shared.Models.UserManagement.Roles>> GetId(int roleId)
         {
-            NProcessResult<Genesis.Core.Models.Roles> result = new NProcessResult<Genesis.Core.Models.Roles>();
+            NProcessResult<Genesis.Shared.Models.UserManagement.Roles> result = new NProcessResult<Genesis.Shared.Models.UserManagement.Roles>();
             var role = await _context.Roles.FindAsync(roleId);
             result.IsSuccess = true;
             result.ResultData = role;
             return result;
         }
 
-        public async Task<NProcessResult<Genesis.Core.Models.Roles>> Create(Genesis.Core.Models.Roles role)
+        public async Task<NProcessResult<Genesis.Shared.Models.UserManagement.Roles>> Create(Genesis.Shared.Models.UserManagement.Roles role)
         {
-            NProcessResult<Genesis.Core.Models.Roles> result = new NProcessResult<Genesis.Core.Models.Roles>();
+            NProcessResult<Genesis.Shared.Models.UserManagement.Roles> result = new NProcessResult<Genesis.Shared.Models.UserManagement.Roles>();
             var newRole = role;
             newRole.IsActive = 1;
             newRole.CreatedDate = DateTime.Now;
@@ -42,7 +42,7 @@ namespace Genesis.CoreApi.Repository
             return result;
         }
 
-        public async Task<NProcessResult<bool>> Update(Genesis.Core.Models.Roles role)
+        public async Task<NProcessResult<bool>> Update(Genesis.Shared.Models.UserManagement.Roles role)
         {
             NProcessResult<bool> result = new NProcessResult<bool>();
           

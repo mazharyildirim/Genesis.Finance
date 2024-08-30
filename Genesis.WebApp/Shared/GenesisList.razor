@@ -96,6 +96,8 @@
         lstPageSize.Add(100);
         listCriteria.PageSize = lstPageSize.First();
     }
+
+ 
 }
 <div >
 @if (Data != null)
@@ -147,12 +149,22 @@
                         <th scope="col">
                             <a  onclick="@(()=> SetColumn(item.ColummName))">@item.DisplayName</a>
                         </th>
+                        
                     }
+                            <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var item in Data)
                     {
+                        var primaryColumn = item.GetType().GetProperty(this.PrimaryKey);
+                        var id = "";
+                            
+                        if (primaryColumn!=null)
+                        {
+                            id = primaryColumn.GetValue(item).ToString();
+                        }
+                        var editLink = this.NewRecordUrl + "/" + id;
                         <tr scope="row">
                             @foreach (var subItem in ColumnList)
                             {
@@ -167,34 +179,36 @@
                                 }
 
                             }
+                                <td><a href="@editLink" class="btn btn-primary m-1">Güncelle</a></td>
                         </tr>
                     }
                 </tbody>
             }
-         
-         <tr scope="row">
-             <td>Toplam Kayıt Sayısı:@TotalCount</td>
-                <td> &nbsp; </td>
-                <td> Sayfa:@(this.PageIndex + 1)</td>
-              <td>
-                    @if (HasPreviousPage){
-                            <a onclick="@(async () => SetPageIndex(0))" class="form-control">Başlangıç</a>
-                    }
-                    @if (this.PageIndex < this.TotalPages && (this.PageIndex !=0))
-                    {
-                            <a onclick="@(async () => SetPageIndex(this.PageIndex-1))" class="form-control">Bir önceki</a>
-                    }
-                    @if (this.PageIndex != this.TotalPages-1 )
-                    {
-                            <a onclick="@(async () => SetPageIndex(this.PageIndex+1))" class="form-control">Bir sonraki</a>
-                    }
-                    @if (HasNextPage){
+         </table>
+        <table class="table">
+             <tr scope="row">
+                 <td>Toplam Kayıt Sayısı:@TotalCount</td>
+                    <td> &nbsp; </td>
+                    <td> Sayfa:@(this.PageIndex + 1)</td>
+                  <td>
+                        @if (HasPreviousPage){
+                                <a onclick="@(async () => SetPageIndex(0))" class="form-control">Başlangıç</a>
+                        }
+                        @if (this.PageIndex < this.TotalPages && (this.PageIndex !=0))
+                        {
+                                <a onclick="@(async () => SetPageIndex(this.PageIndex-1))" class="form-control">Bir önceki</a>
+                        }
+                        @if (this.PageIndex != this.TotalPages-1 )
+                        {
+                                <a onclick="@(async () => SetPageIndex(this.PageIndex+1))" class="form-control">Bir sonraki</a>
+                        }
+                        @if (HasNextPage){
 
-                            <a onclick="@(async () => SetPageIndex(this.TotalPages-1))" class="form-control">Bitiş</a>
-                    }
+                                <a onclick="@(async () => SetPageIndex(this.TotalPages-1))" class="form-control">Bitiş</a>
+                        }
                    
-              </td>
-         </tr>
+                  </td>
+             </tr>
         </table>
     }
     else

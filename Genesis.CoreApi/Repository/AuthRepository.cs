@@ -1,5 +1,4 @@
-﻿using Genesis.Core.Models;
-
+﻿
 namespace Genesis.CoreApi.Repository
 {
     public class AuthRepository: IAuthRepository
@@ -24,12 +23,12 @@ namespace Genesis.CoreApi.Repository
             _context.SaveChanges();
         }
 
-        public Genesis.Core.Models.Users Find(string username, string password)
+        public Genesis.Shared.Models.UserManagement.Users Find(string username, string password)
         {
             return  _context.Users.FirstOrDefault(r => r.UserName == username && r.Password == password);
         }
 
-        public Users FindByRefleshToken(string username, string refleshToken)
+        public Genesis.Shared.Models.UserManagement.Users FindByRefleshToken(string username, string refleshToken)
         {
             return _context.Users.FirstOrDefault(r => r.UserName == username && r.RefreshToken == refleshToken && r.IsActive == 1 && r.IsDeleted == 0);
         }

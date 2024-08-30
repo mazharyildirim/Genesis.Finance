@@ -1,4 +1,4 @@
-﻿using Genesis.Core.Models;
+﻿
 using Genesis.CoreApi.Shared;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
@@ -14,9 +14,9 @@ namespace Genesis.CoreApi.Repository
             _context = context;
         }
 
-        public async Task<NProcessResult<Users>> Create(Users user)
+        public async Task<NProcessResult<Genesis.Shared.Models.UserManagement.Users>> Create(Genesis.Shared.Models.UserManagement.Users user)
         {
-            NProcessResult<Genesis.Core.Models.Users> result = new NProcessResult<Genesis.Core.Models.Users>();
+            NProcessResult< Genesis.Shared.Models.UserManagement.Users > result = new NProcessResult<Genesis.Shared.Models.UserManagement.Users>();
             var newUser = user;
             newUser.IsActive = 1;
             newUser.CreatedDate = DateTime.Now;
@@ -56,21 +56,21 @@ namespace Genesis.CoreApi.Repository
             return result;
         }
 
-        public List<Users> GetAll()
+        public List<Genesis.Shared.Models.UserManagement.Users> GetAll()
         {
-            return _context.Users.Where(r => r.IsDeleted == 0 && r.IsActive == 1).ToList<Users>();
+            return _context.Users.Where(r => r.IsDeleted == 0 && r.IsActive == 1).ToList<Genesis.Shared.Models.UserManagement.Users>();
         }
 
-        public async Task<NProcessResult<Users>> GetId(int id)
+        public async Task<NProcessResult<Genesis.Shared.Models.UserManagement.Users>> GetId(int id)
         {
-            NProcessResult<Genesis.Core.Models.Users> result = new NProcessResult<Genesis.Core.Models.Users>();
+            NProcessResult<Genesis.Shared.Models.UserManagement.Users> result = new NProcessResult<Genesis.Shared.Models.UserManagement.Users>();
             var user = await _context.Users.FindAsync(id);
             result.IsSuccess = true;
             result.ResultData = user;
             return result;
         }
 
-        public async Task<NProcessResult<bool>> Update(Users user)
+        public async Task<NProcessResult<bool>> Update(Genesis.Shared.Models.UserManagement.Users user)
         {
             NProcessResult<bool> result = new NProcessResult<bool>();
 
@@ -96,7 +96,7 @@ namespace Genesis.CoreApi.Repository
             return result;
         }
 
-        public async Task<NProcessResult<bool>> ChangePassword(Users user)
+        public async Task<NProcessResult<bool>> ChangePassword(Genesis.Shared.Models.UserManagement.Users user)
         {
             NProcessResult<bool> result = new NProcessResult<bool>();
 
@@ -118,9 +118,9 @@ namespace Genesis.CoreApi.Repository
             return result;
         }
 
-        public async Task<NProcessResult<Users>> GetUsername(string username)
+        public async Task<NProcessResult<Genesis.Shared.Models.UserManagement.Users>> GetUsername(string username)
         {
-            NProcessResult<Genesis.Core.Models.Users> result = new NProcessResult<Genesis.Core.Models.Users>();
+            NProcessResult<Genesis.Shared.Models.UserManagement.Users> result = new NProcessResult<Genesis.Shared.Models.UserManagement.Users>();
             var user = await _context.Users.FirstOrDefaultAsync(r => r.UserName == username && r.IsActive == 1);
             result.IsSuccess = true;
             result.ResultData = user;

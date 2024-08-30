@@ -20,7 +20,7 @@ namespace Genesis.CoreApi.Migrations
             {
                 string ps = _cryptographer.Encrypt("12345");
 
-                var user = new Genesis.Core.Models.Users()
+                var user = new Genesis.Shared.Models.UserManagement.Users()
                 {
                     FirstName = "test",
                      MiddleName = "",
@@ -32,7 +32,7 @@ namespace Genesis.CoreApi.Migrations
                 };
                 _context.Users.Add(user);
                 _context.SaveChanges();
-                var role = new Genesis.Core.Models.Roles()
+                var role = new Genesis.Shared.Models.UserManagement.Roles()
                 {
                     RoleName = "admin",
                     IsActive =1,
@@ -40,7 +40,7 @@ namespace Genesis.CoreApi.Migrations
                 };
                 _context.Roles.Add(role);
                 _context.SaveChanges();
-                var userRoles = new Genesis.Core.Models.UserRoles()
+                var userRoles = new Genesis.Shared.Models.UserManagement.UserRoles()
                 {
                     RoleId = role.RoleId,
                     UserId = user.UserId

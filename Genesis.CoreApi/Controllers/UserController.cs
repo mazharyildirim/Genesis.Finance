@@ -55,6 +55,7 @@ namespace Genesis.CoreApi.Controllers
                             firstname = c.FirstName,
                             lastname = c.LastName,
                             username = c.UserName,
+                            email = c.Email
                         }),
                     pageIndex,
                     pageSize,
@@ -81,50 +82,91 @@ namespace Genesis.CoreApi.Controllers
 
 
         [HttpPost("AddUser")]
-        public async Task<Response<NoContent>> AddUser([FromBody] UserDTO userDTO, CancellationToken cancellationToken)
+        public async Task<IActionResult> AddUser([FromBody] Genesis.Shared.DTO.UserDTO userDTO, CancellationToken cancellationToken)
         {
-            var newUser = _mapper.Map<Genesis.Core.Models.Users>(userDTO);
-            newUser.CreatedUserId = userDTO.activeuserId;
-            var result = await _repository.Create(newUser);
-
-            if (result.IsSuccess)
-                return Response<NoContent>.Success(204);
-            else
+            try
             {
-                return Response<NoContent>.Fail(!string.IsNullOrEmpty(result.Message) ? result.Message : string.Empty, 404);
+                var newUser = _mapper.Map<Genesis.Shared.Models.UserManagement.Users>(userDTO);
+                newUser.CreatedUserId = userDTO.activeuserId;
+                newUser.MiddleName = !string.IsNullOrEmpty(newUser.MiddleName) ? newUser.MiddleName : string.Empty;
+                newUser.Password = !string.IsNullOrEmpty(newUser.Password) ? newUser.Password : string.Empty;
+                var result = await _repository.Create(newUser);
+
+                if (result.IsSuccess)
+                    return Ok(newUser);
+                else
+                {
+                    return Problem(
+                          detail: result.Message,
+                          title: "Kayıt ekleme");
+
+                }
             }
+            catch (Exception ex)
+            {
+                return Problem(
+                    detail: ex.StackTrace,
+                    title: ex.Message);
+            }
+        
         }
 
         [HttpPut("UpdateUser")]
-        public async Task<Response<NoContent>> UpdateUser([FromBody] UserDTO userDTO, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateUser([FromBody] Genesis.Shared.DTO.UserDTO userDTO , CancellationToken cancellationToken)
         {
-            var updateUser = _mapper.Map<Genesis.Core.Models.Users>(userDTO);
-            updateUser.CreatedUserId = userDTO.activeuserId;
-            var result = await _repository.Update(updateUser);
-            if (result.IsSuccess)
-                return Response<NoContent>.Success(204);
-            else
+            try
             {
-                return Response<NoContent>.Fail(!string.IsNullOrEmpty(result.Message) ? result.Message : string.Empty, 404);
+                var updateUser = _mapper.Map<Genesis.Shared.Models.UserManagement.Users>(userDTO);
+                updateUser.CreatedUserId = userDTO.activeuserId;
+           
+                var result = await _repository.Update(updateUser);
+                if (result.IsSuccess)
+                    return Ok(updateUser);
+                else
+                {
+                    return Problem(
+                          detail: result.Message,
+                          title: "Kayıt güncelleme");
+
+                }
+            }
+            catch (Exception ex)
+            {
+                return Problem(
+                    detail: ex.StackTrace,
+                    title: ex.Message);
             }
         }
 
-        [HttpPut("DeleteUser")]
-        public async Task<Response<NoContent>> DeleteUser([FromQuery] int id, CancellationToken cancellationToken)
+        [HttpDelete("DeleteUser")]
+        public async Task<IActionResult> DeleteUser([FromQuery] int id, CancellationToken cancellationToken)
         {
-            var result = await _repository.Delete(id);
-            if (result.IsSuccess)
-                return Response<NoContent>.Success(204);
-            else
+            try
             {
-                return Response<NoContent>.Fail(!string.IsNullOrEmpty(result.Message) ? result.Message : string.Empty, 404);
+
+                var result = await _repository.Delete(id);
+                if (result.IsSuccess)
+                    return Ok(true);
+                else
+                {
+                    return Problem(
+                            detail: result.Message,
+                            title: "Kayıt güncelleme");
+                }
+            
+            }
+            catch (Exception ex)
+            {
+                return Problem(
+                    detail: ex.StackTrace,
+                    title: ex.Message);
             }
         }
 
         [HttpPut("ChangePassword")]
         public async Task<Response<NoContent>> ChangePassword([FromBody] UserDTO userDTO, CancellationToken cancellationToken)
         {
-            var updateUser = _mapper.Map<Genesis.Core.Models.Users>(userDTO);
+            var updateUser = _mapper.Map<Genesis.Shared.Models.UserManagement.Users>(userDTO);
             string ps = _cryptographer.Encrypt(updateUser.Password);
             updateUser.Password = ps;
             updateUser.CreatedUserId = userDTO.activeuserId;
