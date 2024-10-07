@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
 using Genesis.CoreApi.Repository;
 using Genesis.CoreApi.Shared;
+using Genesis.Shared;
 using Genesis.Shared.DTO;
+using Genesis.Shared.UserRoleManagements;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Genesis.CoreApi.Controllers
 {
@@ -13,60 +16,140 @@ namespace Genesis.CoreApi.Controllers
     {
         private readonly IRolesRepository _repository;
         private readonly IMapper _mapper;
-        public RolesController(IRolesRepository repository, IMapper mapper)
+        private CoreDBContext _context;
+        public RolesController(IRolesRepository repository, IMapper mapper,  CoreDBContext context)
         {
             _repository = repository;
             _mapper = mapper;
+            _context = context;
         }
+
+        [HttpGet("GetRoles")]
+        public async Task<IActionResult> GetRoles(
+             int pageIndex = 0,
+             int pageSize = 10,
+             string? sortColumn = null,
+             string? sortOrder = null,
+             string? filterColumn = null,
+             string? filterQuery = null)
+        {
+            var data = await ApiResult<RoleListModel>.CreateAsync(
+                     _context.Roles.Where(r => r.IsDeleted == 0 && r.IsActive == 1).AsNoTracking()
+                         .Select(c => new RoleListModel()
+                         {
+                             RoleId = c.RoleId,
+                             RoleName = c.RoleName
+                         }),
+                     pageIndex,
+                     pageSize,
+                     sortColumn,
+                     sortOrder,
+                     filterColumn,
+                     filterQuery);
+            RoleResponse response = new RoleResponse();
+            response.List = data.Data;
+            response.PageIndex = data.PageIndex;
+            response.PageSize = data.PageSize;
+            response.TotalCount = data.TotalCount;
+            response.TotalPages = data.TotalPages;
+            return Ok(response);
+        }
+
 
         [HttpGet("GetAllRoles")]
         public Response<List<RoleDTO>> GetAllRoles(CancellationToken cancellationToken)
         {
-            var roles =  _repository.GetAll().ToList();
+            var roles =  _repository.GetAll(cancellationToken);
             
             return Response<List<RoleDTO>>.Success(_mapper.Map<List<RoleDTO>>(roles), 200);
         }
 
         [HttpGet("GetRoleId")]
-        public async Task<Response<RoleDTO>> GetRoleId([FromQuery] int roleId, CancellationToken cancellationToken)
+        public  IActionResult GetRoleId([FromQuery] int roleId, CancellationToken cancellationToken)
         {
-            var role = await _repository.GetId(roleId);
+            var role = _repository.GetId(roleId, cancellationToken);
+            var data = _mapper.Map<RoleDTO>(role.Result.ResultData);
 
-            return Response<RoleDTO>.Success(_mapper.Map<RoleDTO>(role), 200);
+            return Ok(data);
         }
+
+
 
         [HttpPost("AddRole")]
-        public async Task<Response<RoleDTO>> AddRole([FromBody] RoleDTO  roleDTO, CancellationToken cancellationToken)
+        public async Task<IActionResult> AddRole([FromBody] RoleDTO  roleDTO, CancellationToken cancellationToken)
         {
-            var newRole = _mapper.Map<Genesis.Shared.Models.UserManagement.Roles>(roleDTO);
-            var role = await _repository.Create(newRole);
-            
-            return Response<RoleDTO>.Success(_mapper.Map<RoleDTO>(role.ResultData), 200);
-        }
-
-        [HttpPut("UpdateRole")]
-        public async Task<Response<NoContent>> UpdateRole([FromBody] RoleDTO roleDTO, CancellationToken cancellationToken)
-        {
-            var updateRole = _mapper.Map<Genesis.Shared.Models.UserManagement.Roles>(roleDTO);
-            var result = await _repository.Update(updateRole);
-            if (result.IsSuccess)
-                return Response<NoContent>.Success(204);
-            else
+            try
             {
-                return Response<NoContent>.Fail(!string.IsNullOrEmpty(result.Message) ? result.Message : string.Empty, 404);
+                var newRole = _mapper.Map<Genesis.Shared.Models.UserManagement.Roles>(roleDTO);
+                var result = await _repository.Create(newRole, cancellationToken);
+
+                if (result.IsSuccess)
+                    return Ok(newRole);
+                else
+                {
+                    return Problem(
+                          detail: result.Message,
+                          title: "Kayıt ekleme");
+
+                }
+            }
+            catch (Exception ex)
+            {
+                return Problem(
+                    detail: ex.StackTrace,
+                    title: ex.Message);
+            }
+        }
+        [HttpPut("UpdateRole")]
+        public async Task<IActionResult> UpdateRole([FromBody] RoleDTO roleDTO, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var updateRole = _mapper.Map<Genesis.Shared.Models.UserManagement.Roles>(roleDTO);
+                
+
+                var result = await _repository.Update(updateRole, cancellationToken);
+                if (result.IsSuccess)
+                    return Ok(updateRole);
+                else
+                {
+                    return Problem(
+                          detail: result.Message,
+                          title: "Kayıt güncelleme");
+
+                }
+            }
+            catch (Exception ex)
+            {
+                return Problem(
+                    detail: ex.StackTrace,
+                    title: ex.Message);
             }
                 
         }
 
-        [HttpPut("DeleteRole")]
-        public async Task<Response<NoContent>> DeleteRole([FromBody] int roleId, CancellationToken cancellationToken)
+        [HttpDelete("DeleteRole")]
+        public async Task<IActionResult> DeleteRole([FromQuery] int id, CancellationToken cancellationToken)
         {
-            var result = await _repository.Delete(roleId);
-            if (result.IsSuccess)
-                return Response<NoContent>.Success(204);
-            else
+            try
             {
-                return Response<NoContent>.Fail(!string.IsNullOrEmpty(result.Message) ? result.Message : string.Empty, 404);
+
+                var result = await _repository.Delete(id, cancellationToken);
+                if (result.IsSuccess)
+                    return Ok(true);
+                else
+                {
+                    return Problem(
+                            detail: result.Message,
+                            title: "Kayıt güncelleme");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return Problem(
+                    detail: ex.StackTrace,
+                    title: ex.Message);
             }
         }
     }

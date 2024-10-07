@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using Genesis.CoreApi.Repository;
 using Genesis.CoreApi.Shared;
+using Genesis.Shared;
 using Genesis.Shared.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Genesis.CoreApi.Controllers
 {
@@ -18,6 +20,8 @@ namespace Genesis.CoreApi.Controllers
             _repository = repository;
             _mapper = mapper;
         }
+
+       
 
         [HttpPost("AddUserRole")]
         public async Task<Response<NoContent>> AddUser([FromBody] UserRoleDTO userRoleDTO, CancellationToken cancellationToken)

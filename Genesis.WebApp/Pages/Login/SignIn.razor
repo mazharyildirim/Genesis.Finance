@@ -2,7 +2,7 @@
 @page "/Login/SignIn"
 
 @using Genesis.Shared
-@using Genesis.Shared.Users
+@using Genesis.Shared.UserRoleManagements
 @using Genesis.WebApp.Models
 @using Genesis.WebApp.Pages
 @inject NavigationManager navigationManager
@@ -34,7 +34,7 @@
     </div>
 </body>
 @code {
-    Genesis.Shared.Users.Login login = new();
+    Genesis.Shared.UserRoleManagements.Login login = new();
     private ErrorMessages errorMessage = new ErrorMessages();
     async Task Submit()
     {

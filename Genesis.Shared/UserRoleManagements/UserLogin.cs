@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Genesis.Shared.Users
+namespace Genesis.Shared.UserRoleManagements
 {
     public class UserLogin
     {
@@ -16,7 +16,7 @@ namespace Genesis.Shared.Users
         public string Refresh_Token { get; set; }
 
         public string[] Roles { get; set; }
-    
-        
+
+
     }
 }

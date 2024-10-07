@@ -12,6 +12,7 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 builder.Services.AddTransient<IJwtService, JwtService>();
 builder.Services.AddTransient<IConsoleLogService, ConsoleLogService>();
 builder.Services.AddTransient<UserService>();
+builder.Services.AddTransient<RoleService>();
 
 
 builder.Services.AddScoped<IApiService, ApiService>();

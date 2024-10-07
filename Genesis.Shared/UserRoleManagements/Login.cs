@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Genesis.Shared.Users
+namespace Genesis.Shared.UserRoleManagements
 {
     public class Login
     {

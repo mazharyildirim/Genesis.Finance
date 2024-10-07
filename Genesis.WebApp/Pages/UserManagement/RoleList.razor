@@ -1,0 +1,65 @@
+﻿@page "/UserManagement/RoleList"
+@using Genesis.Shared.DTO;
+
+@inject StateService stateService;
+@inject RoleService roleService;
+@inject NavigationManager navigationManager
+
+<h3>Rol Listesi</h3>
+
+@if (response != null)
+{
+
+    <GenesisList Data="@response.List" ColumnList="@columnList" OnClickCallback="@Search"
+                 TotalPages="@response.TotalPages" NewRecordUrl="/UserManagement/RoleEdit"
+                 TotalCount="@response.TotalCount"
+                 PageIndex="@response.PageIndex"
+                 PageSize="@pageSize"
+                 HasNextPage="@response.HasNextPage" HasPreviousPage="@response.HasPreviousPage" PrimaryKey="RoleId"></GenesisList>
+}
+else
+{
+    <div>Yükleniyor...</div>
+}
+
+@code {
+    Genesis.Shared.UserRoleManagements.RoleResponse response = null;
+    List<Genesis.Shared.ComponentModel.ListItem> columnList = null;
+    private Int32 pageSize = 30;
+    protected override async Task OnInitializedAsync()
+    {
+        if (stateService.IsSignedIn)
+        {
+            var roleListResponse = await roleService.GetRoles("", "", "", "", pageSize, 0);
+            if (roleListResponse.HasSuccessStatusCode)
+            {
+                response = roleListResponse.Value;
+                SetColumn();
+            }
+            StateHasChanged();
+        }
+        else
+        {
+            navigationManager.NavigateTo("/Login/Login/SignIn");
+        }
+    }
+
+    private async void Search(Genesis.Shared.ComponentModel.ListCriteriaModel _listCriteriaModel)
+    {
+        var roleListResponse = await roleService.GetRoles(_listCriteriaModel.FilterColumn, _listCriteriaModel.FilterQuery
+            , _listCriteriaModel.SortColumn, _listCriteriaModel.SortOrder, _listCriteriaModel.PageSize, _listCriteriaModel.PageIndex);
+        if (roleListResponse.HasSuccessStatusCode)
+        {
+            pageSize = roleListResponse.Value.PageSize;
+            response = roleListResponse.Value;
+            SetColumn();
+        }
+        StateHasChanged();
+    }
+
+    private void SetColumn()
+    {
+        columnList = new List<Genesis.Shared.ComponentModel.ListItem>();
+        columnList.Add(new Genesis.Shared.ComponentModel.ListItem() { ColummName = "RoleName", DisplayName = "Rol Adı" });
+    }
+}

@@ -1,0 +1,113 @@
+﻿@page "/UserManagement/RoleEdit"
+@page "/UserManagement/RoleEdit/{RoleId}"
+
+@using Genesis.Shared.Models.UserManagement;
+@using Genesis.Shared
+@inject RoleService roleService;
+@inject NavigationManager navigationManager
+@inject StateService stateService;
+<p> <GenesisErrorMessage Messages="@errorMessage"></GenesisErrorMessage></p>
+        <EditForm Model="@roleDTO">
+            <h3>Rol bilgileri</h3>
+            <hr />
+            <div class="row">
+                <div class="mb-3 col">
+                    <label class="form-label">Rol Adı</label>
+                        <InputText id="RoleName" class="form-control" placeholder="Rol Adı"
+                                   @bind-Value="roleDTO.RoleName" />
+                    </div>
+            </div>
+            <div class="row">
+        <div class="mb-3 col">
+            <button class="btn btn-lg btn-primary pull-xs-right" type="button" @onclick="Submit">@ButtonName()</button>
+        </div>
+        @if (!string.IsNullOrEmpty(this.RoleId))
+        {
+            <div class="mb-3 col">
+                <GenesisPopConfirm ConfirmedChanged="Delete" class="btn btn-lg btn-primary pull-xs-right" />
+            </div>
+        }
+            
+  </div>
+        </EditForm>
+
+
+@code {
+    [Parameter]
+    public string RoleId { get; set; }
+    Genesis.Shared.DTO.RoleDTO roleDTO = new Genesis.Shared.DTO.RoleDTO();
+    private ErrorMessages errorMessage = new ErrorMessages();
+    protected override async Task OnInitializedAsync()
+    {
+        stateService.OnUserChange += UserHasLoaded;
+        if (stateService.IsSignedIn)
+        {
+            if (!string.IsNullOrEmpty(this.RoleId))
+            {
+                var roleResponse = await roleService.GetRole(System.Convert.ToInt32(this.RoleId));
+                if (roleResponse.HasSuccessStatusCode)
+                {
+                    roleDTO = roleResponse.Value;
+
+                }
+            }
+        }
+        else
+        {
+            navigationManager.NavigateTo("/Login/Login/SignIn");
+        }
+    }
+
+    public void Dispose()
+    {
+        stateService.OnUserChange -= UserHasLoaded;
+    }
+
+    void UserHasLoaded()
+    {
+        roleDTO = new Genesis.Shared.DTO.RoleDTO();
+        StateHasChanged();
+    }
+    async Task Submit()
+    {
+        roleDTO.activeuserId = stateService.UserResponse.UserId;
+        var roleResponse = !string.IsNullOrEmpty(this.RoleId) ? await roleService.UpdateAsync(roleDTO) : await roleService.AddAsync(roleDTO);
+        if (roleResponse != null && roleResponse.HasSuccessStatusCode)
+        {
+            navigationManager.NavigateTo("/UserManagement/RoleList");
+        }
+        else
+        {
+            errorMessage = roleResponse?.Errors;
+            StateHasChanged();
+        }
+    }
+
+    async Task Delete(bool isDeleted)
+    {
+        if (isDeleted == false) return;
+        var roleResponse = await roleService.DeleteAsync(this.RoleId);
+        if (roleResponse != null && roleResponse.HasSuccessStatusCode)
+        {
+            navigationManager.NavigateTo("/UserManagement/RoleList");
+        }
+        else
+        {
+            errorMessage = roleResponse?.Errors;
+            StateHasChanged();
+        }
+
+    }
+
+    private string ButtonName()
+    {
+        if (!string.IsNullOrEmpty(this.RoleId))
+        {
+            return "Güncelle";
+        }
+        else
+        {
+            return "Ekle";
+        }
+    }
+}

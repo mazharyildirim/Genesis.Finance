@@ -1,4 +1,6 @@
-﻿namespace Genesis.WebApp.Services
+﻿using Genesis.Shared.UserRoleManagements;
+
+namespace Genesis.WebApp.Services
 {
     public class StateService
     {
@@ -7,7 +9,7 @@
         public StateService(IApiService api)
         {
             this.api = api;
-            UserResponse = new Genesis.Shared.Users.UserLogin();
+            UserResponse = new Genesis.Shared.UserRoleManagements.UserLogin();
         }
 
         public event Action OnUserChange;
@@ -15,11 +17,11 @@
         private void NotifyUserChanged() => OnUserChange?.Invoke();
 
         
-        public Genesis.Shared.Users.UserLogin UserResponse { get; private set; }
+        public UserLogin UserResponse { get; private set; }
 
         public bool IsSignedIn => UserResponse?.Access_Token != null;
 
-        public void UpdateUser(Genesis.Shared.Users.UserLogin userResponse)
+        public void UpdateUser(UserLogin userResponse)
         {
 
             var oldToken = UserResponse?.Access_Token;

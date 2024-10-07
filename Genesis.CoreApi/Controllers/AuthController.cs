@@ -1,5 +1,5 @@
 ﻿using Genesis.CoreApi.Shared.Cryptography;
-using Genesis.Shared.Users;
+using Genesis.Shared.UserRoleManagements;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -26,7 +26,7 @@ namespace Genesis.CoreApi.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] Genesis.Shared.Users.Login user, CancellationToken cancellationToken)
+        public async Task<IActionResult> Login([FromBody] Login user, CancellationToken cancellationToken)
         {
 
             try

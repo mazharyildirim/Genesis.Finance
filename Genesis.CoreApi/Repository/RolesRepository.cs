@@ -1,7 +1,8 @@
-﻿
+﻿using System.Linq;
 using AutoMapper;
 using Genesis.CoreApi.Shared;
 using System.Data;
+using System.Linq.Dynamic.Core;
 namespace Genesis.CoreApi.Repository
 {
     public class RolesRepository:  IRolesRepository
@@ -14,21 +15,21 @@ namespace Genesis.CoreApi.Repository
             _mapper = mapper;
         }
 
-        public List<Genesis.Shared.Models.UserManagement.Roles> GetAll()
+        public async Task<List<Genesis.Shared.Models.UserManagement.Roles>> GetAll(CancellationToken cancellationToken)
         {
-            return _context.Roles.Where(r => r.IsDeleted == 0 && r.IsActive == 1).ToList<Genesis.Shared.Models.UserManagement.Roles>();
+            return await _context.Roles.Where(r => r.IsDeleted == 0 && r.IsActive == 1).ToDynamicListAsync<Genesis.Shared.Models.UserManagement.Roles>(cancellationToken);
         }
 
-        public async Task<NProcessResult<Genesis.Shared.Models.UserManagement.Roles>> GetId(int roleId)
+        public async Task<NProcessResult<Genesis.Shared.Models.UserManagement.Roles>> GetId(int roleId, CancellationToken cancellationToken)
         {
             NProcessResult<Genesis.Shared.Models.UserManagement.Roles> result = new NProcessResult<Genesis.Shared.Models.UserManagement.Roles>();
-            var role = await _context.Roles.FindAsync(roleId);
+            var role = await _context.Roles.FindAsync(roleId,cancellationToken);
             result.IsSuccess = true;
             result.ResultData = role;
             return result;
         }
 
-        public async Task<NProcessResult<Genesis.Shared.Models.UserManagement.Roles>> Create(Genesis.Shared.Models.UserManagement.Roles role)
+        public async Task<NProcessResult<Genesis.Shared.Models.UserManagement.Roles>> Create(Genesis.Shared.Models.UserManagement.Roles role, CancellationToken cancellationToken)
         {
             NProcessResult<Genesis.Shared.Models.UserManagement.Roles> result = new NProcessResult<Genesis.Shared.Models.UserManagement.Roles>();
             var newRole = role;
@@ -36,13 +37,13 @@ namespace Genesis.CoreApi.Repository
             newRole.CreatedDate = DateTime.Now;
             newRole.IsDeleted = 0;
             _context.Roles.Add(newRole);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
             result.IsSuccess = true;
             result.ResultData = newRole;
             return result;
         }
 
-        public async Task<NProcessResult<bool>> Update(Genesis.Shared.Models.UserManagement.Roles role)
+        public async Task<NProcessResult<bool>> Update(Genesis.Shared.Models.UserManagement.Roles role, CancellationToken cancellationToken)
         {
             NProcessResult<bool> result = new NProcessResult<bool>();
           
@@ -51,9 +52,9 @@ namespace Genesis.CoreApi.Repository
             {
                 existsUpdateRole.UpdatedDate = DateTime.Now;
                 existsUpdateRole.UpdatedUserId = role.UpdatedUserId;
-                
+                existsUpdateRole.RoleName = role.RoleName;
                 _context.Roles.Update(existsUpdateRole);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(cancellationToken);
                 result.IsSuccess = true;
             }
             else
@@ -64,10 +65,10 @@ namespace Genesis.CoreApi.Repository
             return result;
         }
 
-        public async Task<NProcessResult<bool>> Delete(int roleId)
+        public async Task<NProcessResult<bool>> Delete(int roleId, CancellationToken cancellationToken)
         {
             NProcessResult<bool> result = new NProcessResult<bool>();
-            var role = await _context.Roles.FindAsync(roleId);
+            var role = await _context.Roles.FindAsync(roleId, cancellationToken);
 
             if (role != null)
             {

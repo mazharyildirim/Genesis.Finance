@@ -1,4 +1,5 @@
-﻿using Genesis.WebApp.Models;
+﻿using Genesis.Shared.UserRoleManagements;
+using Genesis.WebApp.Models;
 
 namespace Genesis.WebApp.Services
 {
@@ -25,7 +26,7 @@ namespace Genesis.WebApp.Services
             }
         }
 
-        private async void SetAuth(Genesis.Shared.Users.UserLogin user)
+        private async void SetAuth(UserLogin user)
         {
             if (user != null)
             {
@@ -43,7 +44,7 @@ namespace Genesis.WebApp.Services
 
         private async Task PurgeAuth()
         {
-            Genesis.Shared.Users.UserLogin newUser = new Genesis.Shared.Users.UserLogin();
+            UserLogin newUser = new Genesis.Shared.UserRoleManagements.UserLogin();
             await jwtService.DestroyTokenAsync();
 
             if (state?.UserResponse != newUser)
@@ -55,9 +56,9 @@ namespace Genesis.WebApp.Services
             await PurgeAuth();
         }
 
-        public async Task<ApiResponse<Genesis.Shared.Users.UserLogin>> AttemptAuth(Genesis.Shared.Users.Login credentials)
+        public async Task<ApiResponse<UserLogin>> AttemptAuth(Login credentials)
         {
-            var response = await api.PostAsync<Genesis.Shared.Users.UserLogin>($"/Auth/login", credentials);
+            var response = await api.PostAsync<UserLogin>($"/Auth/login", credentials);
             SetAuth(response?.Value);
             return response;
         }
@@ -71,9 +72,9 @@ namespace Genesis.WebApp.Services
             return response;
         }
 
-        public async Task<ApiResponse<Genesis.Shared.Users.UserResponse>> GetUsers(string filterColumn,string filterQuery,string sortColumn,string sortOrder, int pageSize,int pageIndex)
+        public async Task<ApiResponse<Genesis.Shared.UserRoleManagements.UserResponse>> GetUsers(string filterColumn,string filterQuery,string sortColumn,string sortOrder, int pageSize,int pageIndex)
         {
-            var response = await api.GetAsync<Genesis.Shared.Users.UserResponse>($"/User/GetUsers/", new Dictionary<string, string>
+            var response = await api.GetAsync<Genesis.Shared.UserRoleManagements.UserResponse>($"/User/GetUsers/", new Dictionary<string, string>
             {
                 { "pageIndex", pageIndex.ToString() },
                 { "pageSize", pageSize.ToString() },
@@ -101,8 +102,14 @@ namespace Genesis.WebApp.Services
         {
             var response = await api.DeleteAsync<bool>($"/User/DeleteUser/", new Dictionary<string, string>
             {
-                { "id", userId.ToString() }
+                { "id", userId }
             });
+            return response;
+        }
+
+        public async Task<ApiResponse<UserResponse>> ChangePasswordAsync(Genesis.Shared.DTO.UserDTO credentials)
+        {
+            var response = await api.PutAsync<UserResponse>("/User/ChangePassword", credentials);
             return response;
         }
     }
@@ -112,7 +119,7 @@ namespace Genesis.WebApp.Services
       
         public UserModel User { get; set; }
     }
-
+    
     public static class AuthenticationType
     {
         public const string Login = "/login";

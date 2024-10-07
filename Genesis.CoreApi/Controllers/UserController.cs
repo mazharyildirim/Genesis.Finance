@@ -4,7 +4,7 @@ using Genesis.CoreApi.Shared;
 using Genesis.CoreApi.Shared.Cryptography;
 using Genesis.Shared;
 using Genesis.Shared.DTO;
-using Genesis.Shared.Users;
+using Genesis.Shared.UserRoleManagements;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -32,7 +32,7 @@ namespace Genesis.CoreApi.Controllers
         [HttpGet("GetAllUsers")]
         public IActionResult GetAllUsers(CancellationToken cancellationToken)
         {
-            var users = _repository.GetAll().ToList();
+            var users = _repository.GetAll(cancellationToken);
             return Ok(_mapper.Map<List<UserDTO>>(users));
         }
 
@@ -63,7 +63,7 @@ namespace Genesis.CoreApi.Controllers
                     sortOrder,
                     filterColumn,
                     filterQuery);
-            Genesis.Shared.Users.UserResponse response = new UserResponse();
+            UserResponse response = new UserResponse();
             response.List = data.Data;
             response.PageIndex = data.PageIndex;
             response.PageSize = data.PageSize;
@@ -75,7 +75,7 @@ namespace Genesis.CoreApi.Controllers
         [HttpGet("GetUserId")]
         public IActionResult GetUserId([FromQuery] int id, CancellationToken cancellationToken)
         {
-            var user = _repository.GetId(id);
+            var user = _repository.GetId(id,cancellationToken);
             var data = _mapper.Map<UserDTO>(user.Result.ResultData);
             return Ok(data);
         }
@@ -88,9 +88,10 @@ namespace Genesis.CoreApi.Controllers
             {
                 var newUser = _mapper.Map<Genesis.Shared.Models.UserManagement.Users>(userDTO);
                 newUser.CreatedUserId = userDTO.activeuserId;
+                newUser.CreatedDate = DateTime.Now;
                 newUser.MiddleName = !string.IsNullOrEmpty(newUser.MiddleName) ? newUser.MiddleName : string.Empty;
                 newUser.Password = !string.IsNullOrEmpty(newUser.Password) ? newUser.Password : string.Empty;
-                var result = await _repository.Create(newUser);
+                var result = await _repository.Create(newUser, cancellationToken);
 
                 if (result.IsSuccess)
                     return Ok(newUser);
@@ -118,8 +119,8 @@ namespace Genesis.CoreApi.Controllers
             {
                 var updateUser = _mapper.Map<Genesis.Shared.Models.UserManagement.Users>(userDTO);
                 updateUser.CreatedUserId = userDTO.activeuserId;
-           
-                var result = await _repository.Update(updateUser);
+                updateUser.CreatedDate = DateTime.Now;
+                var result = await _repository.Update(updateUser, cancellationToken);
                 if (result.IsSuccess)
                     return Ok(updateUser);
                 else
@@ -144,7 +145,7 @@ namespace Genesis.CoreApi.Controllers
             try
             {
 
-                var result = await _repository.Delete(id);
+                var result = await _repository.Delete(id, cancellationToken);
                 if (result.IsSuccess)
                     return Ok(true);
                 else
@@ -164,18 +165,30 @@ namespace Genesis.CoreApi.Controllers
         }
 
         [HttpPut("ChangePassword")]
-        public async Task<Response<NoContent>> ChangePassword([FromBody] UserDTO userDTO, CancellationToken cancellationToken)
+        public async Task<IActionResult> ChangePassword([FromBody] UserDTO userDTO, CancellationToken cancellationToken)
         {
-            var updateUser = _mapper.Map<Genesis.Shared.Models.UserManagement.Users>(userDTO);
-            string ps = _cryptographer.Encrypt(updateUser.Password);
-            updateUser.Password = ps;
-            updateUser.CreatedUserId = userDTO.activeuserId;
-            var result = await _repository.ChangePassword(updateUser);
-            if (result.IsSuccess)
-                return Response<NoContent>.Success(204);
-            else
+            try
             {
-                return Response<NoContent>.Fail(!string.IsNullOrEmpty(result.Message) ? result.Message : string.Empty, 404);
+                
+                string ps = _cryptographer.Encrypt(userDTO.password);
+
+
+                var result = await _repository.ChangePassword(userDTO.userId, ps,userDTO.activeuserId, cancellationToken);
+                if (result.IsSuccess)
+                    return Ok(result.ResultData);
+                else
+                {
+                    return Problem(
+                          detail: result.Message,
+                          title: "Kayıt şifre güncelleme");
+
+                }
+            }
+            catch (Exception ex)
+            {
+                return Problem(
+                    detail: ex.StackTrace,
+                    title: ex.Message);
             }
         }
     }

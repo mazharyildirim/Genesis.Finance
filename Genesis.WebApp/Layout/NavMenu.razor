@@ -35,6 +35,11 @@
                 </NavLink>
             </div>
             <div class="nav-item px-3">
+                <NavLink class="nav-link" href="/UserManagement/RoleList">
+                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Rol Listesi
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
                 <NavLink class="nav-link" href="/" @onclick="SignOut">
                     <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Kullanıcı Çıkışı
                 </NavLink>
@@ -54,7 +59,7 @@
 </div>
 
 @code {
-    Genesis.Shared.Users.UserLogin tokens = new();
+    Genesis.Shared.UserRoleManagements.UserLogin tokens = new();
 
     private bool collapseNavMenu = true;
 

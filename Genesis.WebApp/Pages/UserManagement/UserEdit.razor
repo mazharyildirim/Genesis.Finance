@@ -39,18 +39,40 @@
            
         </div>
     </div>
-          
-                <div class="mb-3">
-            <button class="btn btn-lg btn-primary pull-xs-right" type="button" @onclick="Submit">
-                @ButtonName()
-            </button>
-        @if (!string.IsNullOrEmpty(this.UserId)){
-        <GenesisPopConfirm ConfirmedChanged="Delete" class="btn btn-lg btn-primary pull-xs-right" />
-        }
+    <div class="row">
+        
+            <div class="mb-3 col">
+                <button class="btn btn-lg btn-primary pull-xs-right" type="button" @onclick="Submit">@ButtonName()</button>
+            </div>
+                @if (!string.IsNullOrEmpty(this.UserId)){
+                    <div class="mb-3 col">
+                        <GenesisPopConfirm ConfirmedChanged="Delete" class="btn btn-lg btn-primary pull-xs-right" />
+                    </div>
+                }
             
-    </div>
+        </div>
+        
         </EditForm>
-   
+@if (!string.IsNullOrEmpty(this.UserId))
+{
+    <EditForm Model="@userDTO">
+        <h3>Şifre güncelleme</h3>
+        <hr />
+        <div class="row">
+            <div class="mb-3 col">
+                <label class="form-label">Şifre</label>
+                <InputText id="password" class="form-control" placeholder="Şifre"
+                           @bind-Value="userDTO.password" />
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="mb-3">
+                <button class="btn btn-lg btn-primary pull-xs-right" type="button" @onclick="UpdatePassword">Şifre Güncelleme</button>
+            </div>
+        </div>
+    </EditForm>
+}
 
 
 @code {
@@ -69,6 +91,7 @@
                 if (userResponse.HasSuccessStatusCode)
                 {
                     userDTO = userResponse.Value;
+                    userDTO.password = string.Empty;
                 }
             }
         }
@@ -99,10 +122,37 @@
         else
         {
             errorMessage = userResponse?.Errors;
+            StateHasChanged();
         }
     }
-    async Task Delete()
+    async Task UpdatePassword()
     {
+        if (string.IsNullOrEmpty(userDTO.password))
+        {
+            errorMessage = new ErrorMessages()
+                {
+                    title = "Şifre güncelleme",
+                    detail = "Şifre bilgisini giriniz."
+                };
+            StateHasChanged();
+            return;
+        }
+
+        userDTO.activeuserId = stateService.UserResponse.UserId;
+        var userResponse = await userService.ChangePasswordAsync(userDTO);
+        if (userResponse != null && userResponse.HasSuccessStatusCode)
+        {
+            navigationManager.NavigateTo("/UserManagement/UserList");
+        }
+        else
+        {
+            errorMessage = userResponse?.Errors;
+            StateHasChanged();
+        }
+    }
+    async Task Delete(bool isDeleted)
+    {
+        if (isDeleted == false) return;
         if (this.UserId == stateService.UserResponse.UserId.ToString())
         {
             errorMessage = new ErrorMessages()
@@ -121,8 +171,9 @@
         else
         {
             errorMessage = userResponse?.Errors;
+            StateHasChanged();
         }
-        StateHasChanged();
+        
     }
 
     private string ButtonName()
