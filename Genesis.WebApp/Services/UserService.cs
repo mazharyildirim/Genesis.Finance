@@ -63,6 +63,15 @@ namespace Genesis.WebApp.Services
             return response;
         }
 
+        public async Task<ApiResponse<Genesis.Shared.DTO.UserDTO>> GetUsername(string username)
+        {
+            var response = await api.GetAsync<Genesis.Shared.DTO.UserDTO>($"/User/GetUsername/", new Dictionary<string, string>
+            {
+                { "username", username.ToString() }
+            });
+            return response;
+        }
+
         public async Task<ApiResponse<Genesis.Shared.DTO.UserDTO>> GetUser(int userId)
         {
             var response = await api.GetAsync<Genesis.Shared.DTO.UserDTO>($"/User/GetUserId/", new Dictionary<string, string>

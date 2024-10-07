@@ -7,8 +7,9 @@
 @inject NavigationManager navigationManager
 @inject StateService stateService;
 
-<p> <GenesisErrorMessage Messages="@errorMessage"></GenesisErrorMessage></p>
-        <EditForm Model="@userDTO">
+<GenesisErrorMessage Messages="@errorMessage" ></GenesisErrorMessage>
+<EditForm Model="@userDTO" OnValidSubmit="Submit">
+            <DataAnnotationsValidator />
             <h3>Kullanıcı bilgileri</h3>
             <hr />
             <div class="row">
@@ -16,33 +17,34 @@
                     <label class="form-label">Ad</label>
             <InputText id="firstName" class="form-control" placeholder="Ad"
                        @bind-Value="userDTO.firstname" />
-                   
+            <ValidationMessage For="() => userDTO.firstname" class="text-danger d-block" />
                 </div>
                 <div class="mb-3 col">
                     <label class="form-label">Soyad</label>
             <InputText id="lastname" class="form-control" placeholder="Soyad"
                        @bind-Value="userDTO.lastname" />
-                    
-                </div>
+            <ValidationMessage For="() => userDTO.lastname" class="text-danger d-block" />
+        </div>
             </div>
     <div class="row">
         <div class="mb-3 col">
             <label class="form-label">Kullanıcı Adı</label>
             <InputText id="username" class="form-control" placeholder="Kullanıcı adı"
-                       @bind-Value="userDTO.username" type="email" />
+                       @bind-Value="userDTO.username"  />
+            <ValidationMessage For="() => userDTO.username" class="text-danger d-block" />
            
         </div>
         <div class="mb-3 col">
             <label class="form-label">E-posta adresi</label>
             <InputText id="email" class="form-control" placeholder="Elektronik posta"
                        @bind-Value="userDTO.email" type="email" />
-           
+            <ValidationMessage For="() => userDTO.email" class="text-danger d-block" />
         </div>
     </div>
     <div class="row">
         
             <div class="mb-3 col">
-                <button class="btn btn-lg btn-primary pull-xs-right" type="button" @onclick="Submit">@ButtonName()</button>
+                <button class="btn btn-lg btn-primary pull-xs-right" type="submit" >@ButtonName()</button>
             </div>
                 @if (!string.IsNullOrEmpty(this.UserId)){
                     <div class="mb-3 col">
@@ -114,6 +116,18 @@
     async Task Submit()
     {
         userDTO.activeuserId = stateService.UserResponse.UserId;
+
+        var userControlResponse = await userService.GetUsername(userDTO.username);
+        if ((string.IsNullOrEmpty(this.UserId) && userControlResponse.Value!=null) || (!string.IsNullOrEmpty(this.UserId) && userControlResponse.Value != null && userControlResponse.Value.userId != System.Convert.ToInt32(this.UserId)))
+        {
+            errorMessage = new ErrorMessages()
+                {
+                    title = "Kullanıcı güncelleme",
+                    detail = "Kullanıcı adı kullanılıyor."
+                };
+            StateHasChanged();
+            return;
+        }
         var userResponse = !string.IsNullOrEmpty(this.UserId) ? await userService.UpdateAsync(userDTO) : await userService.AddAsync(userDTO);
         if (userResponse != null && userResponse.HasSuccessStatusCode)
         {

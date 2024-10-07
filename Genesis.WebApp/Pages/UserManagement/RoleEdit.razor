@@ -6,8 +6,10 @@
 @inject RoleService roleService;
 @inject NavigationManager navigationManager
 @inject StateService stateService;
-<p> <GenesisErrorMessage Messages="@errorMessage"></GenesisErrorMessage></p>
-        <EditForm Model="@roleDTO">
+ <GenesisErrorMessage Messages="@errorMessage"></GenesisErrorMessage>
+<EditForm Model="@roleDTO" OnValidSubmit="Submit">
+        <DataAnnotationsValidator />
+
             <h3>Rol bilgileri</h3>
             <hr />
             <div class="row">
@@ -15,11 +17,12 @@
                     <label class="form-label">Rol Adı</label>
                         <InputText id="RoleName" class="form-control" placeholder="Rol Adı"
                                    @bind-Value="roleDTO.RoleName" />
+            <ValidationMessage For="() => roleDTO.RoleName" class="text-danger d-block" />
                     </div>
             </div>
             <div class="row">
         <div class="mb-3 col">
-            <button class="btn btn-lg btn-primary pull-xs-right" type="button" @onclick="Submit">@ButtonName()</button>
+            <button class="btn btn-lg btn-primary pull-xs-right" type="submit">@ButtonName()</button>
         </div>
         @if (!string.IsNullOrEmpty(this.RoleId))
         {
@@ -37,6 +40,7 @@
     public string RoleId { get; set; }
     Genesis.Shared.DTO.RoleDTO roleDTO = new Genesis.Shared.DTO.RoleDTO();
     private ErrorMessages errorMessage = new ErrorMessages();
+    
     protected override async Task OnInitializedAsync()
     {
         stateService.OnUserChange += UserHasLoaded;
@@ -70,6 +74,7 @@
     }
     async Task Submit()
     {
+    
         roleDTO.activeuserId = stateService.UserResponse.UserId;
         var roleResponse = !string.IsNullOrEmpty(this.RoleId) ? await roleService.UpdateAsync(roleDTO) : await roleService.AddAsync(roleDTO);
         if (roleResponse != null && roleResponse.HasSuccessStatusCode)

@@ -80,6 +80,14 @@ namespace Genesis.CoreApi.Controllers
             return Ok(data);
         }
 
+        [HttpGet("GetUsername")]
+        public IActionResult GetUsername([FromQuery] string username, CancellationToken cancellationToken)
+        {
+            var user = _repository.GetUsername(username, cancellationToken);
+            var data = _mapper.Map<UserDTO>(user.Result.ResultData);
+            return Ok(data);
+        }
+
 
         [HttpPost("AddUser")]
         public async Task<IActionResult> AddUser([FromBody] Genesis.Shared.DTO.UserDTO userDTO, CancellationToken cancellationToken)
